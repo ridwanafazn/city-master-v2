@@ -56,7 +56,7 @@
 
       <div class="space-y-4 pt-4" v-if="activeDayData">
         <h2 class="text-2xl font-black uppercase border-l-8 border-slate-900 pl-3">
-          Daily Operations : Day {{ activeDayData.day }}
+          Daily Operations : Day {{ activeDayData?.day }}
         </h2>
         
         <PixelCard>
@@ -71,7 +71,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(ex, idx) in activeDayData.exercises" :key="idx" class="hover:bg-blue-50 transition-colors">
+                <tr v-for="(ex, idx) in activeDayData?.exercises" :key="idx" class="hover:bg-blue-50 transition-colors">
                   <td class="p-3 border-3 border-slate-900 font-bold text-base">{{ ex.exercise_name.toUpperCase() }}</td>
                   <td class="p-3 border-3 border-slate-900"><span class="bg-slate-200 px-2 py-1 text-xs border-2 border-slate-900">{{ ex.body_part.toUpperCase() }}</span></td>
                   <td class="p-3 border-3 border-slate-900">
