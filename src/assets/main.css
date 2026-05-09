@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    /* Menggunakan font monospaced untuk kesan technical */
+    @apply font-mono bg-slate-50 text-slate-900 antialiased;
+  }
+}
+
+@layer components {
+  /* Komponen Dasar Pixel UI */
+  .pixel-border {
+    @apply border-3 border-slate-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)];
+  }
+  
+  .pixel-button {
+    @apply px-4 py-2 bg-white border-2 border-slate-900 active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all;
+  }
+}
