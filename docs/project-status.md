@@ -18,6 +18,7 @@ Scope decision: **feature milestones stop at M5 for now**.
 | Portfolio project page | ✅ Updated in Neon |
 | Banner/screenshot assets | ✅ Generated and published |
 | UI/UX v2 | ✅ Complete & deployed (phase 6) |
+| Handover | ✅ Documented in [`handover.md`](handover.md) |
 
 M6 and M7 are intentionally deferred until further notice. They are not
 required for the current product scope. The next active workstream is the
@@ -65,6 +66,8 @@ Deployment targets:
 - Completed UI/UX v2 phases 2–6; commit `4ce0e58` on `feat/ui-v2` and `main`.
 - Deployed frontend to Cloudflare Pages production `jymz`:
   deployment `1307cc5a-4354-4683-abb7-f8e0cfaac37b`, commit `4ce0e58`.
+- Final docs deployment `82be0184-8d0d-44de-966f-5218e9349430`, commit
+  `818ff98`; app code identik dengan `4ce0e58`.
 - Deployed backend to Railway service `jymz-api` from local `main`
   `971a6d9`: deployment `110567c8-5211-4ce8-9287-95f3f00fb404`.
 - Verified production: `/health` 200, `/ready` database `ok`, P2.3 metric
@@ -73,6 +76,8 @@ Deployment targets:
 - Verified frontend production: static font preloads, title
   `Parameter latihan | JYMZ`, sign-in render, 0 auth/Neon requests on public
   config.
+- Added [`handover.md`](handover.md) with production state, deploy runbook,
+  verification, limitations, and handover checklist.
 
 ### 2026-11-23
 
@@ -174,6 +179,8 @@ production deploy, not full M7 hardening.
 M6 (Collaboration) and M7 (Release hardening) remain deferred indefinitely.
 Future work is maintenance, bug fixes, and operational monitoring unless a new
 explicit request reopens a milestone.
+
+Handover and deploy runbook: [`handover.md`](handover.md).
 
 - Baseline: [`ui-ux-v2-baseline.md`](ui-ux-v2-baseline.md)
 - Phase 1: [`ui-ux-v2-phase-1.md`](ui-ux-v2-phase-1.md)

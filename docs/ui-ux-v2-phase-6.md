@@ -7,6 +7,7 @@ Commit fase 0: `69ee8d2`
 Commit fase 1: `7e6c0de`  
 Commit fase 2–6: `4ce0e58`  
 Deploy FE: Cloudflare Pages `1307cc5a-4354-4683-abb7-f8e0cfaac37b`  
+Deploy FE final (docs): `82be0184-8d0d-44de-966f-5218e9349430`  
 Deploy BE: Railway `110567c8-5211-4ce8-9287-95f3f00fb404` (`main` `971a6d9`)
 
 Fase 6 menutup UI/UX v2 dengan performance tuning, Lighthouse, QA lintas
@@ -162,8 +163,9 @@ akun, review onboarding, dan submit onboarding tetap berjalan. Smoke test fase 3
 
 ### Deployed production
 
-- Frontend: `https://jymz.pages.dev` — deployment
-  `1307cc5a-4354-4683-abb7-f8e0cfaac37b`, commit `4ce0e58`.
+- Frontend: `https://jymz.pages.dev` — deployment app
+  `1307cc5a-4354-4683-abb7-f8e0cfaac37b` (commit `4ce0e58`); deployment final
+  `82be0184-8d0d-44de-966f-5218e9349430` (commit `818ff98`, app code sama).
 - Backend: `https://jymz-api-production.up.railway.app` — deployment
   `110567c8-5211-4ce8-9287-95f3f00fb404`, source `main` `971a6d9`.
 - `/health` 200; `/ready` database `ok`; `/metrics` memuat metrik P2.3.
@@ -205,3 +207,6 @@ akun, review onboarding, dan submit onboarding tetap berjalan. Smoke test fase 3
 
 UI/UX v2 selesai dan berjalan di produksi. M6/M7 tetap deferred. Perubahan
 berikutnya memerlukan review baru.
+
+Status produksi, perintah deploy ulang, dan checklist handover dicatat di
+[`handover.md`](handover.md).

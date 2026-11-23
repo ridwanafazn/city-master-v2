@@ -71,6 +71,8 @@ Progress, feedback & safety milestone:
 
 Current status and deployment links:
 [`docs/project-status.md`](docs/project-status.md).  
+Handover (status, deploy, verifikasi):
+[`docs/handover.md`](docs/handover.md).  
 UI/UX & performance v2 plan:
 [`docs/ui-ux-v2-plan.md`](docs/ui-ux-v2-plan.md).  
 UI/UX v2 baseline:
