@@ -101,6 +101,18 @@ const router = createRouter({
           component: () => import('../views/app/PlanDetailView.vue'),
           meta: { title: 'Plan Detail | JYMZ', requiresProfile: true },
         },
+        {
+          path: 'workouts',
+          name: 'app-workouts',
+          component: () => import('../views/app/WorkoutHistoryView.vue'),
+          meta: { title: 'Workout History | JYMZ', requiresProfile: true },
+        },
+        {
+          path: 'workouts/:workoutId',
+          name: 'app-workout-detail',
+          component: () => import('../views/app/WorkoutDetailView.vue'),
+          meta: { title: 'Workout | JYMZ', requiresProfile: true },
+        },
       ],
     },
     {

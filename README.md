@@ -64,6 +64,7 @@ npm run dev -- --host 127.0.0.1 --port 5173
 
 Auth milestone: [`docs/m1-auth-and-account.md`](docs/m1-auth-and-account.md).  
 Profile milestone: [`docs/m2-onboarding-and-profile.md`](docs/m2-onboarding-and-profile.md).  
-Plan milestone: [`docs/m3-plan-lifecycle.md`](docs/m3-plan-lifecycle.md).
+Plan milestone: [`docs/m3-plan-lifecycle.md`](docs/m3-plan-lifecycle.md).  
+Workout milestone: [`docs/m4-workout-execution.md`](docs/m4-workout-execution.md).
 M1 needs the backend restarted with `AUTH_ENABLED=true`,
 `AUTH_PROFILES_ENABLED=true`, and `VITE_NEON_AUTH_URL` set in the frontend env.

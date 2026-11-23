@@ -4,23 +4,26 @@
       <div>
         <div class="flex items-center gap-2 mb-2">
           <span class="bg-blue-500 text-white border-2 border-slate-900 px-2 py-1 font-mono text-[10px] font-black uppercase">
-            M3 · Plan Lifecycle
+            M4 · Workout Execution
           </span>
           <span class="font-mono text-[10px] text-slate-500 uppercase">
-            {{ planCountLabel }}
+            {{ workoutCountLabel }}
           </span>
         </div>
         <h1 class="text-4xl md:text-5xl font-black uppercase tracking-tighter">
           Control <span class="text-blue-600">Room</span>
         </h1>
         <p class="text-slate-600 mt-2 font-mono text-sm max-w-2xl">
-          [SYS_MSG]: Profile and consent are ready. Generate, version, share, and
-          export saved plans.
+          [SYS_MSG]: Plans are ready. Start a workout, log sets, finish the
+          session, and sync offline mutations.
         </p>
       </div>
-      <div class="flex gap-2">
+      <div class="flex flex-wrap gap-2">
         <RouterLink to="/app/plans" class="pixel-button font-black uppercase inline-flex items-center">
           Plan Library
+        </RouterLink>
+        <RouterLink to="/app/workouts" class="pixel-button font-black uppercase inline-flex items-center">
+          Workout History
         </RouterLink>
         <PixelButton
           variant="secondary"
@@ -105,7 +108,7 @@
     </section>
 
     <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <PixelCard title="M3 Checklist">
+      <PixelCard title="M4 Checklist">
         <ul class="space-y-2 font-mono text-xs">
           <li v-for="item in checklist" :key="item.label" class="flex gap-2">
             <span
@@ -119,16 +122,16 @@
         </ul>
       </PixelCard>
 
-      <PixelCard title="Next: M4 Workout Execution">
+      <PixelCard title="Next: M5 Progress, Feedback & Safety">
         <ol class="space-y-2 font-mono text-sm list-decimal list-inside">
-          <li>Start workout from a plan day</li>
-          <li>Set logger + substitution</li>
-          <li>Complete workout summary</li>
-          <li>Offline queue + sync batch</li>
-          <li>Workout history</li>
+          <li>Progress dashboard</li>
+          <li>History + insights</li>
+          <li>Personal records</li>
+          <li>Feedback form</li>
+          <li>Safety report</li>
         </ol>
         <p class="mt-4 text-xs text-slate-500 font-mono">
-          Plans with locked exercises and revision history are ready for the workout loop.
+          Workout totals and offline sync are ready for the retention loop.
         </p>
       </PixelCard>
     </section>
@@ -143,23 +146,26 @@ import StatusRow from '../../components/ui/StatusRow.vue'
 import { useAppStore } from '../../stores/appStore'
 import { useAuthStore } from '../../stores/authStore'
 import { usePlanStore } from '../../stores/planStore'
+import { useWorkoutStore } from '../../stores/workoutStore'
 
 const appStore = useAppStore()
 const auth = useAuthStore()
 const planStore = usePlanStore()
+const workoutStore = useWorkoutStore()
 
 const checklist = [
-  { label: 'Plan create with idempotency key', done: true },
-  { label: 'Plan library + cursor pagination', done: true },
-  { label: 'Day detail + lock/swap/regenerate', done: true },
-  { label: 'Revision conflict handling', done: true },
-  { label: 'Version history', done: true },
-  { label: 'Share link + public read-only view', done: true },
-  { label: 'PDF / ICS export', done: true },
+  { label: 'Start workout from plan day', done: true },
+  { label: 'Live set logger + edit/delete', done: true },
+  { label: 'Complete workout summary', done: true },
+  { label: 'Offline queue + batch sync', done: true },
+  { label: 'Workout history', done: true },
+  { label: 'Exercise substitution', done: true },
 ]
 
-const planCountLabel = computed(() =>
-  planStore.plans.length ? `${planStore.plans.length} saved plans` : 'No plans yet',
+const workoutCountLabel = computed(() =>
+  workoutStore.workouts.length
+    ? `${workoutStore.workouts.length} sessions`
+    : 'No workouts yet',
 )
 
 const consentSummary = computed(() => {
@@ -210,6 +216,9 @@ onMounted(() => {
   void appStore.checkBackend()
   if (!planStore.plans.length) {
     void planStore.list(true)
+  }
+  if (!workoutStore.workouts.length) {
+    void workoutStore.list(true)
   }
 })
 </script>

@@ -81,14 +81,23 @@
               <span class="font-black uppercase text-sm">
                 {{ activeDay.day_focus }} · {{ activeDay.exercises.length }} exercises
               </span>
-              <PixelButton
-                variant="secondary"
-                :disabled="planStore.saving"
-                class="text-[10px]"
-                @click="regenerateDay"
-              >
-                Regenerate Day
-              </PixelButton>
+              <div class="flex flex-wrap gap-2">
+                <PixelButton
+                  :disabled="startingWorkout || planStore.saving"
+                  class="text-[10px]"
+                  @click="startWorkout"
+                >
+                  {{ startingWorkout ? 'Starting…' : 'Start Workout >' }}
+                </PixelButton>
+                <PixelButton
+                  variant="secondary"
+                  :disabled="planStore.saving"
+                  class="text-[10px]"
+                  @click="regenerateDay"
+                >
+                  Regenerate Day
+                </PixelButton>
+              </div>
             </div>
 
             <div class="divide-y-2 divide-slate-200">
@@ -219,17 +228,22 @@ import PixelCard from '../../components/ui/PixelCard.vue'
 import StatusRow from '../../components/ui/StatusRow.vue'
 import { bodyPartLabel, formatDate, SHARE_EXPIRY_OPTIONS, splitLabel } from '../../lib/planOptions'
 import { usePlanStore } from '../../stores/planStore'
+import { useProfileStore } from '../../stores/profileStore'
+import { useWorkoutStore } from '../../stores/workoutStore'
 import type { PlanExercise } from '../../types/plans'
 
 const route = useRoute()
 const router = useRouter()
 const planStore = usePlanStore()
+const profileStore = useProfileStore()
+const workoutStore = useWorkoutStore()
 
 const planId = computed(() => String(route.params.planId))
 const plan = computed(() => planStore.plan)
 const activeDayNumber = ref(1)
 const shareDays = ref(7)
 const confirmingDelete = ref(false)
+const startingWorkout = ref(false)
 
 const activeDay = computed(() => {
   if (!plan.value) return null
@@ -274,6 +288,29 @@ async function regenerateDay() {
     day: activeDay.value.day,
   })
   if (ok) await reloadVersions()
+}
+
+async function startWorkout() {
+  if (!plan.value || !activeDay.value) return
+  startingWorkout.value = true
+  try {
+    await profileStore.load()
+    const workout = await workoutStore.start({
+      plan_id: plan.value.id,
+      day: activeDay.value.day,
+      plan_version: plan.value.current_version,
+      timezone: profileStore.profile?.timezone ?? 'UTC',
+      client_session_id: crypto.randomUUID(),
+    })
+    if (workout) {
+      await router.push({
+        name: 'app-workout-detail',
+        params: { workoutId: workout.id },
+      })
+    }
+  } finally {
+    startingWorkout.value = false
+  }
 }
 
 async function createShare() {

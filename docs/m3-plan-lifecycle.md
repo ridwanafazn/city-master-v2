@@ -170,3 +170,5 @@ Completed locally with the active smoke account:
 3. Complete workout summary.
 4. Offline queue + `POST /sync/batch`.
 5. Workout history.
+
+Implemented in [`m4-workout-execution.md`](m4-workout-execution.md).
