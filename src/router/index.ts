@@ -49,6 +49,12 @@ const router = createRouter({
       meta: { title: 'Create Account | JYMZ', guestOnly: true },
     },
     {
+      path: '/shared/:token',
+      name: 'shared-plan',
+      component: () => import('../views/shared/PublicPlanView.vue'),
+      meta: { title: 'Shared Plan | JYMZ' },
+    },
+    {
       path: '/app',
       component: () => import('../components/layout/AppShell.vue'),
       meta: { title: 'App Console | JYMZ', requiresAuth: true },
@@ -76,6 +82,24 @@ const router = createRouter({
           name: 'app-profile',
           component: () => import('../views/app/ProfileSettingsView.vue'),
           meta: { title: 'Profile Settings | JYMZ' },
+        },
+        {
+          path: 'plans',
+          name: 'app-plans',
+          component: () => import('../views/app/PlanListView.vue'),
+          meta: { title: 'Plan Library | JYMZ', requiresProfile: true },
+        },
+        {
+          path: 'plans/new',
+          name: 'app-plan-new',
+          component: () => import('../views/app/PlanCreateView.vue'),
+          meta: { title: 'Generate Plan | JYMZ', requiresProfile: true },
+        },
+        {
+          path: 'plans/:planId',
+          name: 'app-plan-detail',
+          component: () => import('../views/app/PlanDetailView.vue'),
+          meta: { title: 'Plan Detail | JYMZ', requiresProfile: true },
         },
       ],
     },

@@ -17,7 +17,7 @@
       </button>
     </div>
     <p class="font-mono text-[10px] text-slate-500">
-      {{ selected.length }} selected. Kosong berarti semua equipment dianggap tersedia.
+      {{ selected.length }}<span v-if="max"> / {{ max }}</span> selected. Kosong berarti semua equipment dianggap tersedia.
     </p>
   </div>
 </template>
@@ -25,14 +25,22 @@
 <script setup lang="ts">
 import { EQUIPMENT_OPTIONS, equipmentLabel } from '../../lib/profileOptions'
 
+const props = defineProps({
+  max: {
+    type: Number,
+    default: 0,
+  },
+})
+
 const selected = defineModel<string[]>({ required: true })
 
 function toggle(value: string) {
   const index = selected.value.indexOf(value)
   if (index >= 0) {
     selected.value.splice(index, 1)
-  } else {
-    selected.value.push(value)
+    return
   }
+  if (props.max > 0 && selected.value.length >= props.max) return
+  selected.value.push(value)
 }
 </script>

@@ -2,3 +2,4 @@ export { apiClient, API_BASE_URL, API_ORIGIN, ApiError, toApiError, setAuthToken
 export { fitnessService } from './fitnessService'
 export { healthService } from './healthService'
 export { meService } from './meService'
+export { plansService } from './plansService'

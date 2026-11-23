@@ -4,21 +4,24 @@
       <div>
         <div class="flex items-center gap-2 mb-2">
           <span class="bg-blue-500 text-white border-2 border-slate-900 px-2 py-1 font-mono text-[10px] font-black uppercase">
-            M2 · Onboarding & Profile
+            M3 · Plan Lifecycle
           </span>
           <span class="font-mono text-[10px] text-slate-500 uppercase">
-            {{ auth.profileComplete ? 'Profile complete' : 'Profile incomplete' }}
+            {{ planCountLabel }}
           </span>
         </div>
         <h1 class="text-4xl md:text-5xl font-black uppercase tracking-tighter">
           Control <span class="text-blue-600">Room</span>
         </h1>
         <p class="text-slate-600 mt-2 font-mono text-sm max-w-2xl">
-          [SYS_MSG]: Authenticated with Neon Auth. Profile, equipment, injuries, and
-          consent are managed before plans and workouts.
+          [SYS_MSG]: Profile and consent are ready. Generate, version, share, and
+          export saved plans.
         </p>
       </div>
       <div class="flex gap-2">
+        <RouterLink to="/app/plans" class="pixel-button font-black uppercase inline-flex items-center">
+          Plan Library
+        </RouterLink>
         <PixelButton
           variant="secondary"
           :disabled="appStore.backendStatus === 'checking'"
@@ -26,9 +29,6 @@
         >
           {{ appStore.backendStatus === 'checking' ? 'Checking…' : 'Refresh Status' }}
         </PixelButton>
-        <RouterLink to="/" class="pixel-button font-black uppercase inline-flex items-center">
-          Public Engine
-        </RouterLink>
       </div>
     </header>
 
@@ -105,7 +105,7 @@
     </section>
 
     <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <PixelCard title="M2 Checklist">
+      <PixelCard title="M3 Checklist">
         <ul class="space-y-2 font-mono text-xs">
           <li v-for="item in checklist" :key="item.label" class="flex gap-2">
             <span
@@ -119,16 +119,16 @@
         </ul>
       </PixelCard>
 
-      <PixelCard title="Next: M3 Plan Lifecycle">
+      <PixelCard title="Next: M4 Workout Execution">
         <ol class="space-y-2 font-mono text-sm list-decimal list-inside">
-          <li>Generate + save plan</li>
-          <li>Plan list + detail</li>
-          <li>Revision conflicts</li>
-          <li>Versions + share link</li>
-          <li>PDF/ICS export</li>
+          <li>Start workout from a plan day</li>
+          <li>Set logger + substitution</li>
+          <li>Complete workout summary</li>
+          <li>Offline queue + sync batch</li>
+          <li>Workout history</li>
         </ol>
         <p class="mt-4 text-xs text-slate-500 font-mono">
-          Plans require a complete profile and health consent when injuries exist.
+          Plans with locked exercises and revision history are ready for the workout loop.
         </p>
       </PixelCard>
     </section>
@@ -142,18 +142,25 @@ import PixelCard from '../../components/ui/PixelCard.vue'
 import StatusRow from '../../components/ui/StatusRow.vue'
 import { useAppStore } from '../../stores/appStore'
 import { useAuthStore } from '../../stores/authStore'
+import { usePlanStore } from '../../stores/planStore'
 
 const appStore = useAppStore()
 const auth = useAuthStore()
+const planStore = usePlanStore()
 
 const checklist = [
-  { label: 'Onboarding wizard', done: true },
-  { label: 'Profile fields', done: true },
-  { label: 'Equipment picker', done: true },
-  { label: 'Injury picker + health consent gate', done: true },
-  { label: 'Consent management', done: true },
-  { label: 'Data export', done: true },
+  { label: 'Plan create with idempotency key', done: true },
+  { label: 'Plan library + cursor pagination', done: true },
+  { label: 'Day detail + lock/swap/regenerate', done: true },
+  { label: 'Revision conflict handling', done: true },
+  { label: 'Version history', done: true },
+  { label: 'Share link + public read-only view', done: true },
+  { label: 'PDF / ICS export', done: true },
 ]
+
+const planCountLabel = computed(() =>
+  planStore.plans.length ? `${planStore.plans.length} saved plans` : 'No plans yet',
+)
 
 const consentSummary = computed(() => {
   const entries = Object.entries(auth.consents)
@@ -201,5 +208,8 @@ function refresh() {
 
 onMounted(() => {
   void appStore.checkBackend()
+  if (!planStore.plans.length) {
+    void planStore.list(true)
+  }
 })
 </script>

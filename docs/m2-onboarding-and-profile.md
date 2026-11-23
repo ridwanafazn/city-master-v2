@@ -178,3 +178,5 @@ Completed with the M1 smoke account:
 3. Revision conflict handling.
 4. Versions.
 5. Share links and PDF/ICS export.
+
+Implemented in [`m3-plan-lifecycle.md`](m3-plan-lifecycle.md).
