@@ -229,3 +229,5 @@ Completed on the local stack:
 3. Health-data consent gate.
 4. Consent management and data export.
 5. Profile-complete guard before plans/workouts.
+
+Implemented in [`m2-onboarding-and-profile.md`](m2-onboarding-and-profile.md).

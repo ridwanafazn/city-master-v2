@@ -62,6 +62,7 @@ npm run dev -- --host 127.0.0.1 --port 5173
 - API base URL: `VITE_API_BASE_URL` (default `http://localhost:8080/api/v1`)
 - Backend flags stay off until their frontend milestone needs them.
 
-Auth milestone: [`docs/m1-auth-and-account.md`](docs/m1-auth-and-account.md).
+Auth milestone: [`docs/m1-auth-and-account.md`](docs/m1-auth-and-account.md).  
+Profile milestone: [`docs/m2-onboarding-and-profile.md`](docs/m2-onboarding-and-profile.md).
 M1 needs the backend restarted with `AUTH_ENABLED=true`,
 `AUTH_PROFILES_ENABLED=true`, and `VITE_NEON_AUTH_URL` set in the frontend env.

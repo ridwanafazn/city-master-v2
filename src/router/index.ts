@@ -7,6 +7,7 @@ declare module 'vue-router' {
   interface RouteMeta {
     title?: string
     requiresAuth?: boolean
+    requiresProfile?: boolean
     guestOnly?: boolean
   }
 }
@@ -64,6 +65,18 @@ const router = createRouter({
           component: () => import('../views/app/AccountView.vue'),
           meta: { title: 'Account | JYMZ' },
         },
+        {
+          path: 'onboarding',
+          name: 'app-onboarding',
+          component: () => import('../views/app/OnboardingView.vue'),
+          meta: { title: 'Profile Setup | JYMZ' },
+        },
+        {
+          path: 'profile',
+          name: 'app-profile',
+          component: () => import('../views/app/ProfileSettingsView.vue'),
+          meta: { title: 'Profile Settings | JYMZ' },
+        },
       ],
     },
     {
@@ -85,6 +98,24 @@ router.beforeEach(async (to) => {
     if (!auth.isAuthenticated) {
       return {
         name: 'sign-in',
+        query: { redirectTo: to.fullPath },
+        replace: true,
+      }
+    }
+  }
+
+  if (to.matched.some((record) => record.meta.requiresProfile)) {
+    await auth.initialize()
+    if (!auth.isAuthenticated) {
+      return {
+        name: 'sign-in',
+        query: { redirectTo: to.fullPath },
+        replace: true,
+      }
+    }
+    if (!auth.profileComplete) {
+      return {
+        name: 'app-onboarding',
         query: { redirectTo: to.fullPath },
         replace: true,
       }

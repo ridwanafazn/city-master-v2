@@ -19,6 +19,13 @@
           >
             Control Room
           </RouterLink>
+          <RouterLink
+            to="/app/profile"
+            class="px-3 py-2 border-2 border-transparent hover:border-slate-900"
+            active-class="bg-slate-900 text-white border-slate-900"
+          >
+            Profile
+          </RouterLink>
           <span class="px-3 py-2 text-slate-400 border-2 border-transparent">
             Plans <small class="text-[10px]">M3</small>
           </span>
@@ -74,6 +81,13 @@
         >
           Control Room
         </RouterLink>
+        <RouterLink
+          to="/app/profile"
+          class="px-3 py-1 border-2 border-slate-900 bg-white shrink-0"
+          active-class="bg-slate-900 text-white"
+        >
+          Profile
+        </RouterLink>
         <span class="px-3 py-1 border-2 border-slate-300 text-slate-400 shrink-0">Plans · M3</span>
         <span class="px-3 py-1 border-2 border-slate-300 text-slate-400 shrink-0">Workouts · M4</span>
         <span class="px-3 py-1 border-2 border-slate-300 text-slate-400 shrink-0">Progress · M5</span>
@@ -93,7 +107,7 @@
 
     <footer class="border-t-4 border-slate-900 bg-white">
       <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row gap-2 justify-between font-mono text-[10px] text-slate-500 uppercase">
-        <span>{{ appStore.appName }} · Frontend M1</span>
+        <span>{{ appStore.appName }} · Frontend M2</span>
         <span class="truncate">API: {{ appStore.apiBaseUrl }}</span>
       </div>
     </footer>

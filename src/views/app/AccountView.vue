@@ -4,9 +4,11 @@
       <div>
         <div class="flex items-center gap-2 mb-2">
           <span class="bg-blue-500 text-white border-2 border-slate-900 px-2 py-1 font-mono text-[10px] font-black uppercase">
-            M1 · Auth & Account
+            M2 · Profile & Consent
           </span>
-          <span class="font-mono text-[10px] text-slate-500 uppercase">Session active</span>
+          <span class="font-mono text-[10px] text-slate-500 uppercase">
+            {{ auth.profileComplete ? 'Profile complete' : 'Profile incomplete' }}
+          </span>
         </div>
         <h1 class="text-4xl md:text-5xl font-black uppercase tracking-tighter">
           Account <span class="text-blue-600">Console</span>
@@ -16,12 +18,25 @@
         </p>
       </div>
       <div class="flex gap-2">
+        <RouterLink
+          :to="auth.profileComplete ? '/app/profile' : '/app/onboarding'"
+          class="pixel-button text-xs font-black uppercase inline-flex items-center"
+        >
+          {{ auth.profileComplete ? 'Edit Profile' : 'Complete Profile' }}
+        </RouterLink>
         <PixelButton variant="secondary" :disabled="loading" @click="refresh">
           {{ loading ? 'Refreshing…' : 'Refresh /me' }}
         </PixelButton>
         <PixelButton variant="danger" @click="signOut">Sign Out</PixelButton>
       </div>
     </header>
+
+    <div
+      v-if="route.query.onboarding === 'done'"
+      class="border-3 border-green-700 bg-green-50 p-3 font-mono text-xs text-green-900"
+    >
+      Profil berhasil disimpan. Data ini sekarang dipakai untuk plan dan workout.
+    </div>
 
     <div
       v-if="auth.error"
@@ -64,20 +79,29 @@
           </li>
         </ul>
         <p class="mt-4 text-[10px] font-mono text-slate-500 uppercase">
-          Consent management dilengkapi di M2 onboarding.
+          Kelola consent di Profile Settings.
         </p>
       </PixelCard>
     </section>
 
     <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <PixelCard title="Next: M2 Onboarding">
+      <PixelCard title="Profile & Consent">
         <p class="font-mono text-sm text-slate-600">
-          Profil, equipment, injuries, dan consent akan diisi di M2. Sampai saat itu
-          akun ini hanya membuktikan sesi Neon Auth + <code class="bg-slate-100 px-1">GET /me</code>.
+          Profil, equipment, cedera, consent, dan export data dikelola di halaman
+          profile. Status lengkap:
+          <strong>{{ auth.profileComplete ? 'COMPLETE' : 'INCOMPLETE' }}</strong>.
         </p>
-        <RouterLink to="/app" class="pixel-button inline-flex mt-4 text-xs font-black uppercase">
-          < Back to Control Room
-        </RouterLink>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <RouterLink
+            :to="auth.profileComplete ? '/app/profile' : '/app/onboarding'"
+            class="pixel-button text-xs font-black uppercase inline-flex items-center"
+          >
+            {{ auth.profileComplete ? 'Open Profile Settings' : 'Start Onboarding' }}
+          </RouterLink>
+          <RouterLink to="/app" class="pixel-button text-xs font-black uppercase inline-flex items-center">
+            < Back to Control Room
+          </RouterLink>
+        </div>
       </PixelCard>
 
       <PixelCard title="Danger Zone">
@@ -117,13 +141,14 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import PixelButton from '../../components/ui/PixelButton.vue'
 import PixelCard from '../../components/ui/PixelCard.vue'
 import StatusRow from '../../components/ui/StatusRow.vue'
 import { useAuthStore } from '../../stores/authStore'
 
 const auth = useAuthStore()
+const route = useRoute()
 const router = useRouter()
 const loading = ref(false)
 const deleting = ref(false)

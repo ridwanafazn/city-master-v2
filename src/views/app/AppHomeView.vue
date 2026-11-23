@@ -4,16 +4,18 @@
       <div>
         <div class="flex items-center gap-2 mb-2">
           <span class="bg-blue-500 text-white border-2 border-slate-900 px-2 py-1 font-mono text-[10px] font-black uppercase">
-            M1 · Auth & Account
+            M2 · Onboarding & Profile
           </span>
-          <span class="font-mono text-[10px] text-slate-500 uppercase">Neon Auth session active</span>
+          <span class="font-mono text-[10px] text-slate-500 uppercase">
+            {{ auth.profileComplete ? 'Profile complete' : 'Profile incomplete' }}
+          </span>
         </div>
         <h1 class="text-4xl md:text-5xl font-black uppercase tracking-tighter">
           Control <span class="text-blue-600">Room</span>
         </h1>
         <p class="text-slate-600 mt-2 font-mono text-sm max-w-2xl">
-          [SYS_MSG]: Authenticated with Neon Auth and mapped to the FastAPI user
-          record. Onboarding, plans, and workouts arrive in the next milestones.
+          [SYS_MSG]: Authenticated with Neon Auth. Profile, equipment, injuries, and
+          consent are managed before plans and workouts.
         </p>
       </div>
       <div class="flex gap-2">
@@ -29,6 +31,19 @@
         </RouterLink>
       </div>
     </header>
+
+    <div
+      v-if="!auth.profileComplete"
+      class="border-3 border-yellow-700 bg-yellow-50 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+    >
+      <div class="font-mono text-xs text-yellow-900">
+        <strong class="uppercase">Profile incomplete.</strong>
+        Lengkapi profil, equipment, cedera, dan consent sebelum membuat plan.
+      </div>
+      <RouterLink to="/app/onboarding" class="pixel-button text-xs font-black uppercase bg-yellow-200 inline-flex items-center">
+        Start Onboarding >
+      </RouterLink>
+    </div>
 
     <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <PixelCard title="Backend Link" class="lg:col-span-2">
@@ -80,11 +95,17 @@
           <StatusRow label="Consent" :value="consentSummary" />
           <StatusRow label="User ID" :value="auth.me?.user.id ?? '—'" />
         </div>
+        <RouterLink
+          :to="auth.profileComplete ? '/app/profile' : '/app/onboarding'"
+          class="pixel-button mt-4 w-full text-center text-[10px] font-black uppercase inline-block"
+        >
+          {{ auth.profileComplete ? 'Open Profile' : 'Complete Profile' }}
+        </RouterLink>
       </PixelCard>
     </section>
 
     <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <PixelCard title="M1 Checklist">
+      <PixelCard title="M2 Checklist">
         <ul class="space-y-2 font-mono text-xs">
           <li v-for="item in checklist" :key="item.label" class="flex gap-2">
             <span
@@ -98,17 +119,16 @@
         </ul>
       </PixelCard>
 
-      <PixelCard title="Next: M2 Onboarding & Profile">
+      <PixelCard title="Next: M3 Plan Lifecycle">
         <ol class="space-y-2 font-mono text-sm list-decimal list-inside">
-          <li>Onboarding wizard</li>
-          <li>Profile fields</li>
-          <li>Equipment + injuries</li>
-          <li>Health-data consent gate</li>
-          <li>Consent management + export</li>
+          <li>Generate + save plan</li>
+          <li>Plan list + detail</li>
+          <li>Revision conflicts</li>
+          <li>Versions + share link</li>
+          <li>PDF/ICS export</li>
         </ol>
         <p class="mt-4 text-xs text-slate-500 font-mono">
-          Account and consent state are already available at
-          <RouterLink to="/app/account" class="underline">/app/account</RouterLink>.
+          Plans require a complete profile and health consent when injuries exist.
         </p>
       </PixelCard>
     </section>
@@ -127,12 +147,12 @@ const appStore = useAppStore()
 const auth = useAuthStore()
 
 const checklist = [
-  { label: 'Neon Auth client + provider', done: true },
-  { label: 'Session restoration after reload', done: true },
-  { label: 'Axios bearer token interceptor', done: true },
-  { label: 'Protected /app routes', done: true },
-  { label: 'GET /me bootstrap', done: true },
-  { label: 'Account page + sign out', done: true },
+  { label: 'Onboarding wizard', done: true },
+  { label: 'Profile fields', done: true },
+  { label: 'Equipment picker', done: true },
+  { label: 'Injury picker + health consent gate', done: true },
+  { label: 'Consent management', done: true },
+  { label: 'Data export', done: true },
 ]
 
 const consentSummary = computed(() => {

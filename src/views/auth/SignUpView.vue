@@ -107,7 +107,7 @@ async function submit() {
   try {
     const ok = await auth.signUp(name.value, email.value, password.value)
     if (ok) {
-      await router.replace(redirectTo.value)
+      await router.replace(auth.profileComplete ? redirectTo.value : '/app/onboarding')
     }
   } finally {
     submitting.value = false
