@@ -179,9 +179,10 @@ VITE_APP_NAME=JYMZ
 VITE_NEON_AUTH_URL=https://<branch-host>/<database>/auth
 ```
 
-Neon Auth trusted domains must include the browser origin. `localhost:5173` is
-trusted on the current branch; use `http://localhost:5173`, not
-`http://127.0.0.1:5173`, unless that origin is also added.
+Neon Auth trusted domains must include the browser origin. The current dev
+branch trusts both `http://localhost:5173` and `http://127.0.0.1:5173`;
+production should only trust `https://jymz.pages.dev`. If a local origin is
+missing, Neon returns `Invalid origin` on sign-in/sign-up.
 
 The current branch has:
 
