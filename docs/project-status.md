@@ -17,7 +17,7 @@ Scope decision: **feature milestones stop at M5 for now**.
 | Public recommendation flow | ✅ Preserved |
 | Portfolio project page | ✅ Updated in Neon |
 | Banner/screenshot assets | ✅ Generated and published |
-| UI/UX v2 | 🚧 Phase 6 complete (review); commit + deploy pending |
+| UI/UX v2 | ✅ Complete & deployed (phase 6) |
 
 M6 and M7 are intentionally deferred until further notice. They are not
 required for the current product scope. The next active workstream is the
@@ -59,6 +59,20 @@ Deployment targets:
 - CORS: exact origin `https://jymz.pages.dev`.
 
 ## 4. Event log
+
+### 2026-11-24
+
+- Completed UI/UX v2 phases 2–6; commit `4ce0e58` on `feat/ui-v2` and `main`.
+- Deployed frontend to Cloudflare Pages production `jymz`:
+  deployment `1307cc5a-4354-4683-abb7-f8e0cfaac37b`, commit `4ce0e58`.
+- Deployed backend to Railway service `jymz-api` from local `main`
+  `971a6d9`: deployment `110567c8-5211-4ce8-9287-95f3f00fb404`.
+- Verified production: `/health` 200, `/ready` database `ok`, P2.3 metric
+  `jymz_rate_limit_degraded_total` present in `/metrics`, public
+  recommendation `201` (~1.1 s warm), CORS `https://jymz.pages.dev`.
+- Verified frontend production: static font preloads, title
+  `Parameter latihan | JYMZ`, sign-in render, 0 auth/Neon requests on public
+  config.
 
 ### 2026-11-23
 
@@ -155,11 +169,11 @@ production deploy, not full M7 hardening.
 
 ## 7. Next workstream
 
-**Release UI/UX v2: review, commit phases 2–6, deploy, verify production.**
+**UI/UX v2 is complete and deployed.** No active feature milestone.
 
-UI/UX v2 is implemented through phase 6. The remaining work is review, a
-single commit series for phases 2–6, deployment to Cloudflare Pages/Railway,
-and a production smoke test. M6 and M7 remain deferred.
+M6 (Collaboration) and M7 (Release hardening) remain deferred indefinitely.
+Future work is maintenance, bug fixes, and operational monitoring unless a new
+explicit request reopens a milestone.
 
 - Baseline: [`ui-ux-v2-baseline.md`](ui-ux-v2-baseline.md)
 - Phase 1: [`ui-ux-v2-phase-1.md`](ui-ux-v2-phase-1.md)

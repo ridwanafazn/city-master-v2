@@ -41,7 +41,7 @@ Bagian ini menyoroti antarmuka pengguna yang disajikan dalam presentasi sidang s
 
 ## 🧱 App v2 development (M0)
 
-Frontend sedang dikembangkan menjadi aplikasi JYMZ penuh di branch `feat/app-v2`.
+Frontend JYMZ penuh sudah berjalan di `main`; UI/UX v2 selesai dan deployed.
 Rancangan milestone dan kontrak M0 ada di
 [`docs/m0-foundation.md`](docs/m0-foundation.md).
 
@@ -97,9 +97,9 @@ M1 needs the backend restarted with `AUTH_ENABLED=true`,
 M5 needs `PROGRESS_ENABLED=true` and `FEEDBACK_ENABLED=true` in addition to the
 workout flags.
 
-> **Scope update (2026-11-23):** M0–M5 are complete. **M6 (Collaboration) and
-> M7 (Release hardening) are deferred indefinitely.** The next active workstream
-> is UI/UX & performance v2, starting only after the plan is reviewed.
+> **Scope update (2026-11-24):** M0–M5 and UI/UX v2 are complete and deployed.
+> **M6 (Collaboration) and M7 (Release hardening) are deferred indefinitely.**
+> Future work is maintenance unless a milestone is explicitly reopened.
 
 Live services:
 

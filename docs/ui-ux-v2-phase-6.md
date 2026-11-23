@@ -1,17 +1,17 @@
 # JYMZ UI/UX v2 — Phase 6: Performance + QA
 
-Status: **selesai, menunggu review**  
+Status: **deployed to production**  
 Tanggal: **2026-11-24**  
-Branch: `feat/ui-v2`  
+Branch: `feat/ui-v2` (merged to `main`)  
 Commit fase 0: `69ee8d2`  
 Commit fase 1: `7e6c0de`  
-Fase 2–6: implemented, belum di-commit  
-Dev server: `http://127.0.0.1:5173`  
-Preview produksi: `http://127.0.0.1:4173`
+Commit fase 2–6: `4ce0e58`  
+Deploy FE: Cloudflare Pages `1307cc5a-4354-4683-abb7-f8e0cfaac37b`  
+Deploy BE: Railway `110567c8-5211-4ce8-9287-95f3f00fb404` (`main` `971a6d9`)
 
 Fase 6 menutup UI/UX v2 dengan performance tuning, Lighthouse, QA lintas
-viewport, dan pemeriksaan kesiapan deploy. Tidak ada fitur M6/M7, perubahan
-kontrak API, atau deploy.
+viewport, pemeriksaan kesiapan deploy, dan deploy produksi. Tidak ada fitur
+M6/M7 atau perubahan kontrak API.
 
 ---
 
@@ -159,7 +159,19 @@ akun, review onboarding, dan submit onboarding tetap berjalan. Smoke test fase 3
 - Font self-host; tidak ada Google Fonts runtime.
 - Public flow tetap berjalan tanpa login.
 - Tidak ada perubahan backend, schema, atau kontrak API.
-- **Belum di-deploy.**
+
+### Deployed production
+
+- Frontend: `https://jymz.pages.dev` — deployment
+  `1307cc5a-4354-4683-abb7-f8e0cfaac37b`, commit `4ce0e58`.
+- Backend: `https://jymz-api-production.up.railway.app` — deployment
+  `110567c8-5211-4ce8-9287-95f3f00fb404`, source `main` `971a6d9`.
+- `/health` 200; `/ready` database `ok`; `/metrics` memuat metrik P2.3.
+- `POST /api/v1/recommendation/` 201 dalam ~1,1 s warm; CORS hanya
+  `https://jymz.pages.dev`.
+- Public config produksi: preload font aktif, judul `Parameter latihan | JYMZ`,
+  0 request auth/Neon.
+- Sign-in produksi tampil normal.
 
 ---
 
@@ -174,7 +186,8 @@ akun, review onboarding, dan submit onboarding tetap berjalan. Smoke test fase 3
 - Pengujian 200% zoom belum diotomasi terpisah; layout sudah diuji pada 390,
   768, dan 1440 px, fokus keyboard dan reduced motion sudah diverifikasi pada
   fase 5.
-- Fase 2–6 belum di-commit dan belum deploy.
+- UI/UX v2 sudah di-commit dan di-deploy; perubahan berikutnya memerlukan
+  review baru.
 
 ---
 
@@ -184,10 +197,11 @@ akun, review onboarding, dan submit onboarding tetap berjalan. Smoke test fase 3
 |---|---|
 | 0 — baseline | selesai, commit `69ee8d2` |
 | 1 — tokens/fonts/primitives | selesai, commit `7e6c0de` |
-| 2 — shell/Today/auth | selesai, uncommitted |
-| 3 — plans/workout | selesai, uncommitted |
-| 4 — progress/profile/onboarding | selesai, uncommitted |
-| 5 — public flow/motion | selesai, uncommitted |
-| 6 — performance/QA | selesai, uncommitted |
+| 2 — shell/Today/auth | selesai, deployed |
+| 3 — plans/workout | selesai, deployed |
+| 4 — progress/profile/onboarding | selesai, deployed |
+| 5 — public flow/motion | selesai, deployed |
+| 6 — performance/QA | selesai, deployed |
 
-Langkah berikutnya: review, commit fase 2–6, lalu deploy. M6/M7 tetap deferred.
+UI/UX v2 selesai dan berjalan di produksi. M6/M7 tetap deferred. Perubahan
+berikutnya memerlukan review baru.
