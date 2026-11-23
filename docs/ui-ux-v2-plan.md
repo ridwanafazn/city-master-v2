@@ -66,11 +66,24 @@ Signal Editorial is a refined neo-brutalist/editorial hybrid:
 - orange used as a signal, not decoration;
 - thin borders and subtle shadows for most surfaces;
 - offset shadows reserved for the primary CTA or hero moments;
-- bento-like composition with generous whitespace;
-- mono type only for data, labels, and technical metadata.
+- editorial ledger composition: tables, rules, and specimens before card
+  grids; cards only for units that genuinely stand alone;
+- mono type only for data, units, IDs, timestamps, and short metadata labels.
 
-It should feel like a fitness product designed by an engineer, not like a
-terminal with forms.
+It should feel like a **training field manual** designed by an engineer, not a
+SaaS dashboard with forms and not a terminal with cards.
+
+The binding detail lives in [`DESIGN.md`](../DESIGN.md). In particular:
+
+- no eyebrow/kicker above headings;
+- no decorative section numbers;
+- no colored left border on cards or status messages;
+- no grid texture in a hero unless a real measuring tool/blueprint sits under
+  it;
+- no four equal stat cards as page structure;
+- no nested cards;
+- no mono paragraphs, emoji icons, gradient text, or fake CTAs in docs;
+- Signal `#D9480F` is an accent; text and CTAs use `#C2410C` (AA on paper).
 
 ### Palette
 

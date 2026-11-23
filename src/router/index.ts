@@ -37,6 +37,12 @@ const router = createRouter({
       meta: { title: 'Dashboard | Fitness-RS' },
     },
     {
+      path: '/style-guide',
+      name: 'style-guide',
+      component: () => import('../views/StyleGuideView.vue'),
+      meta: { title: 'Style Guide | JYMZ' },
+    },
+    {
       path: '/auth/sign-in',
       name: 'sign-in',
       component: () => import('../views/auth/SignInView.vue'),

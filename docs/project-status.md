@@ -1,7 +1,7 @@
 # JYMZ project status
 
 Last updated: **2026-11-23**  
-Branch: `feat/app-v2`  
+Branch: `feat/ui-v2`  
 Scope decision: **feature milestones stop at M5 for now**.
 
 ## 1. Status summary
@@ -17,7 +17,7 @@ Scope decision: **feature milestones stop at M5 for now**.
 | Public recommendation flow | ✅ Preserved |
 | Portfolio project page | ✅ Updated in Neon |
 | Banner/screenshot assets | ✅ Generated and published |
-| UI/UX v2 | 📝 Planned, not started |
+| UI/UX v2 | 🚧 Phase 1 complete (review); phase 2 next |
 
 M6 and M7 are intentionally deferred until further notice. They are not
 required for the current product scope. The next active workstream is the
@@ -83,6 +83,15 @@ Deployment targets:
   - Keep cold-start UX for Railway Free.
   - Use Lucide icons.
 - Deferred M6 and M7 indefinitely.
+- Created `feat/ui-v2` from `feat/app-v2` @ `992e241`.
+- Completed UI/UX v2 phase 0: baseline Lighthouse, bundle, waterfall, cold
+  start, and responsive screenshots in
+  [`ui-ux-v2-baseline.md`](ui-ux-v2-baseline.md).
+- Completed UI/UX v2 phase 1: `tokens.css`, self-hosted Latin fonts, 21 UI-v2
+  primitives, `/style-guide`, `_headers`, and `robots.txt`. The style guide was
+  rebuilt as a JYMZ field manual with a live training-log specimen; binding
+  design rules live in [`DESIGN.md`](../DESIGN.md). No deploy or commit yet.
+  See [`ui-ux-v2-phase-1.md`](ui-ux-v2-phase-1.md).
 
 ## 5. Known limitations
 
@@ -119,6 +128,15 @@ production deploy, not full M7 hardening.
 
 ## 7. Next workstream
 
-**UI/UX & performance v2** — planning complete, implementation not started.
+**UI/UX & performance v2 — phase 2.**
 
-See [`ui-ux-v2-plan.md`](ui-ux-v2-plan.md).
+Phase 2 covers the new AppShell, desktop sidebar/mobile bottom navigation,
+Home/Today, auth pages, auth split from the public entry, and a wired
+`ServerWakeBanner`.
+
+- Baseline: [`ui-ux-v2-baseline.md`](ui-ux-v2-baseline.md)
+- Phase 1: [`ui-ux-v2-phase-1.md`](ui-ux-v2-phase-1.md)
+- Plan: [`ui-ux-v2-plan.md`](ui-ux-v2-plan.md)
+
+Authenticated Lighthouse/waterfall measurements are still blocked on a safe
+test account plus a separate Neon branch.

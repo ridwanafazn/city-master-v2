@@ -72,7 +72,15 @@ Progress, feedback & safety milestone:
 Current status and deployment links:
 [`docs/project-status.md`](docs/project-status.md).  
 UI/UX & performance v2 plan:
-[`docs/ui-ux-v2-plan.md`](docs/ui-ux-v2-plan.md).
+[`docs/ui-ux-v2-plan.md`](docs/ui-ux-v2-plan.md).  
+UI/UX v2 baseline:
+[`docs/ui-ux-v2-baseline.md`](docs/ui-ux-v2-baseline.md).  
+UI/UX v2 phase 1 (tokens, fonts, primitives):
+[`docs/ui-ux-v2-phase-1.md`](docs/ui-ux-v2-phase-1.md).  
+Binding design agreement:
+[`DESIGN.md`](DESIGN.md).  
+Style guide lokal: `http://localhost:5173/style-guide` (route publik, tidak
+ditautkan dari navigasi).
 
 M1 needs the backend restarted with `AUTH_ENABLED=true`,
 `AUTH_PROFILES_ENABLED=true`, and `VITE_NEON_AUTH_URL` set in the frontend env.  

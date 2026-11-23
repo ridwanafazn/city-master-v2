@@ -1,0 +1,274 @@
+/* ==========================================================================
+   JYMZ UI/UX v2 — design tokens (Signal Editorial)
+   Phase 1 foundation. Existing pages keep their legacy styling until they are
+   migrated in later phases; nothing here is applied globally except the
+   accessible reduced-motion guard and light color-scheme.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Self-hosted variable fonts (Latin subset)
+   Bricolage Grotesque — display, Public Sans — body, JetBrains Mono — data.
+   Preload is intentionally deferred to phase 2, when the app shell actually
+   uses these families above the fold.
+   -------------------------------------------------------------------------- */
+
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  font-style: normal;
+  font-weight: 400 800;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url('/fonts/bricolage-grotesque-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Public Sans';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/public-sans-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* --------------------------------------------------------------------------
+   Palette
+   Signal #D9480F is an accent/fill color, not a body-text color on paper
+   (4.01:1). Signal Strong #C2410C is the AA-safe text/CTA variant (4.83:1 on
+   paper, 5.18:1 on white). Success ink is darkened for text on success bg.
+   -------------------------------------------------------------------------- */
+
+:root {
+  color-scheme: light;
+
+  --color-paper: #f8f7f4;
+  --color-ink: #14160f;
+  --color-muted: #5a5e4e;
+  --color-line: #d9ded1;
+  --color-surface: #f1f2ec;
+  --color-surface-raised: #ffffff;
+  --color-signal: #d9480f;
+  --color-signal-strong: #c2410c;
+  --color-signal-hover: #9a3412;
+  --color-signal-wash: #fdf0e8;
+  --color-signal-ink: #ffffff;
+  --color-data: #2563eb;
+  --color-data-wash: #eaf1fe;
+  --color-success: #4d7c0f;
+  --color-success-ink: #3f6212;
+  --color-success-bg: #e8f5e1;
+  --color-danger: #b42318;
+  --color-danger-bg: #fef3f2;
+  --color-warning: #b45309;
+  --color-warning-bg: #fef6e7;
+  --color-focus: rgba(194, 65, 12, 0.38);
+
+  /* Semantic aliases used by components. */
+  --bg: var(--color-paper);
+  --surface: var(--color-surface-raised);
+  --text: var(--color-ink);
+  --text-muted: var(--color-muted);
+  --border: var(--color-line);
+
+  /* ------------------------------------------------------------------------
+     Typography
+     ------------------------------------------------------------------------ */
+
+  --font-display: 'Bricolage Grotesque', 'Public Sans', ui-sans-serif, system-ui,
+    sans-serif;
+  --font-body: 'Public Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
+    sans-serif;
+  --font-data: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco,
+    Consolas, monospace;
+
+  --text-display-1: clamp(2.5rem, 5vw, 4rem);
+  --text-display-2: clamp(2rem, 3.6vw, 2.75rem);
+  --text-h1: clamp(1.875rem, 3vw, 2.5rem);
+  --text-h2: 1.5rem;
+  --text-h3: 1.25rem;
+  --text-body: 1rem;
+  --text-body-lg: 1.125rem;
+  --text-small: 0.875rem;
+  --text-label: 0.75rem;
+
+  --leading-tight: 1.08;
+  --leading-snug: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.65;
+
+  --tracking-tight: -0.02em;
+  --tracking-wide: 0.08em;
+
+  /* ------------------------------------------------------------------------
+     8pt spacing scale
+     ------------------------------------------------------------------------ */
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+
+  /* ------------------------------------------------------------------------
+     Shape, elevation, motion
+     ------------------------------------------------------------------------ */
+
+  --radius-card: 12px;
+  --radius-control: 10px;
+  --radius-pill: 999px;
+
+  --shadow-card: 0 1px 2px rgba(20, 22, 15, 0.06);
+  --shadow-raised: 0 8px 24px rgba(20, 22, 15, 0.08);
+  --shadow-cta: 4px 4px 0 var(--color-ink);
+  --shadow-focus: 0 0 0 3px var(--color-focus);
+
+  --motion-fast: 160ms;
+  --motion-base: 200ms;
+  --motion-slow: 240ms;
+  --ease-entrance: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-exit: ease-out;
+
+  /* ------------------------------------------------------------------------
+     Layout and layers
+     ------------------------------------------------------------------------ */
+
+  --content-max: 1240px;
+  --measure: 68ch;
+  --rule-strong: 1px solid var(--color-ink);
+  --rule: 1px solid var(--color-line);
+  --gutter-mobile: 16px;
+  --gutter-desktop: 32px;
+  --touch-target: 44px;
+
+  --z-header: 20;
+  --z-overlay: 40;
+  --z-sheet: 50;
+  --z-toast: 60;
+}
+
+/* --------------------------------------------------------------------------
+   Opt-in typography helpers. Used by UI-v2 primitives and the style guide;
+   legacy pages are not affected until they are migrated.
+   -------------------------------------------------------------------------- */
+
+.type-display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+}
+
+.type-body {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  line-height: var(--leading-relaxed);
+}
+
+.type-data {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.type-label {
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: var(--tracking-wide);
+  line-height: var(--leading-snug);
+  text-transform: uppercase;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Scope for the style guide and every migrated UI-v2 page. */
+.ui-v2-scope {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  line-height: var(--leading-relaxed);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  scrollbar-color: var(--color-line) var(--color-paper);
+}
+
+.ui-v2-scope ::selection {
+  background: var(--color-signal-strong);
+  color: var(--color-signal-ink);
+}
+
+.ui-v2-scope :where(input, textarea) {
+  caret-color: var(--color-signal-strong);
+}
+
+.ui-v2-scope :where(a) {
+  text-underline-offset: 0.18em;
+}
+
+.ui-v2-scope ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.ui-v2-scope ::-webkit-scrollbar-track {
+  background: var(--color-paper);
+}
+
+.ui-v2-scope ::-webkit-scrollbar-thumb {
+  border: 2px solid var(--color-paper);
+  border-radius: var(--radius-pill);
+  background: var(--color-line);
+}
+
+.ui-v2-scope ::-webkit-scrollbar-thumb:hover {
+  background: #b9c0ae;
+}
+
+.ui-v2-scope :where(h1, h2, h3, h4) {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+}
+
+.ui-v2-scope :where(code, kbd, samp) {
+  font-family: var(--font-data);
+}
+
+.ui-v2-scope :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-signal-strong);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
