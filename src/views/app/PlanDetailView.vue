@@ -216,6 +216,15 @@
           </PixelCard>
         </aside>
       </section>
+
+      <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <FeedbackForm :plan-id="plan.id" title="Plan Feedback" />
+        <SafetyReportForm
+          v-if="planSafetyExercises.length"
+          :plan-id="plan.id"
+          :exercises="planSafetyExercises"
+        />
+      </section>
     </template>
   </div>
 </template>
@@ -223,6 +232,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import FeedbackForm from '../../components/feedback/FeedbackForm.vue'
+import SafetyReportForm from '../../components/feedback/SafetyReportForm.vue'
 import PixelButton from '../../components/ui/PixelButton.vue'
 import PixelCard from '../../components/ui/PixelCard.vue'
 import StatusRow from '../../components/ui/StatusRow.vue'
@@ -230,6 +241,7 @@ import { bodyPartLabel, formatDate, SHARE_EXPIRY_OPTIONS, splitLabel } from '../
 import { usePlanStore } from '../../stores/planStore'
 import { useProfileStore } from '../../stores/profileStore'
 import { useWorkoutStore } from '../../stores/workoutStore'
+import type { SafetyExercise } from '../../types/feedback'
 import type { PlanExercise } from '../../types/plans'
 
 const route = useRoute()
@@ -248,6 +260,18 @@ const startingWorkout = ref(false)
 const activeDay = computed(() => {
   if (!plan.value) return null
   return plan.value.days.find((day) => day.day === activeDayNumber.value) ?? plan.value.days[0] ?? null
+})
+
+const planSafetyExercises = computed<SafetyExercise[]>(() => {
+  if (!plan.value) return []
+  return plan.value.days.flatMap((day) =>
+    day.exercises.map((exercise) => ({
+      id: `${day.day}-${exercise.id}`,
+      label: `Day ${day.day} · ${exercise.exercise_name}`,
+      exerciseId: exercise.exercise_id,
+      planExerciseId: exercise.id,
+    })),
+  )
 })
 
 const frontendShareUrl = computed(() => {

@@ -4,7 +4,7 @@
       <div>
         <div class="flex items-center gap-2 mb-2">
           <span class="bg-blue-500 text-white border-2 border-slate-900 px-2 py-1 font-mono text-[10px] font-black uppercase">
-            M4 · Workout Execution
+            M5 · Progress & Feedback
           </span>
           <span class="font-mono text-[10px] text-slate-500 uppercase">
             {{ workoutCountLabel }}
@@ -14,8 +14,8 @@
           Control <span class="text-blue-600">Room</span>
         </h1>
         <p class="text-slate-600 mt-2 font-mono text-sm max-w-2xl">
-          [SYS_MSG]: Plans are ready. Start a workout, log sets, finish the
-          session, and sync offline mutations.
+          [SYS_MSG]: Workout data is flowing. Review progress, personal records,
+          feedback, and safety reports.
         </p>
       </div>
       <div class="flex flex-wrap gap-2">
@@ -24,6 +24,9 @@
         </RouterLink>
         <RouterLink to="/app/workouts" class="pixel-button font-black uppercase inline-flex items-center">
           Workout History
+        </RouterLink>
+        <RouterLink to="/app/progress" class="pixel-button font-black uppercase inline-flex items-center">
+          Progress
         </RouterLink>
         <PixelButton
           variant="secondary"
@@ -108,7 +111,7 @@
     </section>
 
     <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <PixelCard title="M4 Checklist">
+      <PixelCard title="M5 Checklist">
         <ul class="space-y-2 font-mono text-xs">
           <li v-for="item in checklist" :key="item.label" class="flex gap-2">
             <span
@@ -122,16 +125,16 @@
         </ul>
       </PixelCard>
 
-      <PixelCard title="Next: M5 Progress, Feedback & Safety">
+      <PixelCard title="Next: M6 Collaboration">
         <ol class="space-y-2 font-mono text-sm list-decimal list-inside">
-          <li>Progress dashboard</li>
-          <li>History + insights</li>
-          <li>Personal records</li>
-          <li>Feedback form</li>
-          <li>Safety report</li>
+          <li>Trainer profile + clients</li>
+          <li>Invitations + scopes</li>
+          <li>Comments + plan reviews</li>
+          <li>Notifications + calendar</li>
+          <li>Organizations</li>
         </ol>
         <p class="mt-4 text-xs text-slate-500 font-mono">
-          Workout totals and offline sync are ready for the retention loop.
+          Progress and feedback close the core user loop.
         </p>
       </PixelCard>
     </section>
@@ -154,12 +157,11 @@ const planStore = usePlanStore()
 const workoutStore = useWorkoutStore()
 
 const checklist = [
-  { label: 'Start workout from plan day', done: true },
-  { label: 'Live set logger + edit/delete', done: true },
-  { label: 'Complete workout summary', done: true },
-  { label: 'Offline queue + batch sync', done: true },
-  { label: 'Workout history', done: true },
-  { label: 'Exercise substitution', done: true },
+  { label: 'Progress dashboard + range', done: true },
+  { label: 'Workout history + insights', done: true },
+  { label: 'Personal records', done: true },
+  { label: 'Plan/workout feedback', done: true },
+  { label: 'Safety report', done: true },
 ]
 
 const workoutCountLabel = computed(() =>

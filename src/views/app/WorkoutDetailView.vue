@@ -256,6 +256,20 @@
           </PixelCard>
         </aside>
       </section>
+
+      <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <FeedbackForm
+          v-if="workout.status === 'completed'"
+          :plan-id="workout.plan_id"
+          :workout-id="workout.id"
+        />
+        <SafetyReportForm
+          v-if="safetyExercises.length"
+          :plan-id="workout.plan_id"
+          :workout-id="workout.id"
+          :exercises="safetyExercises"
+        />
+      </section>
     </template>
   </div>
 </template>
@@ -264,6 +278,8 @@
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { fitnessService } from '../../api/fitnessService'
+import FeedbackForm from '../../components/feedback/FeedbackForm.vue'
+import SafetyReportForm from '../../components/feedback/SafetyReportForm.vue'
 import PixelButton from '../../components/ui/PixelButton.vue'
 import PixelCard from '../../components/ui/PixelCard.vue'
 import StatusRow from '../../components/ui/StatusRow.vue'
@@ -271,6 +287,7 @@ import { formatDate } from '../../lib/planOptions'
 import { useProfileStore } from '../../stores/profileStore'
 import { useWorkoutStore } from '../../stores/workoutStore'
 import type { Exercise } from '../../types'
+import type { SafetyExercise } from '../../types/feedback'
 import type { SetLog, SetUpdateInput, WorkoutExercise } from '../../types/workouts'
 
 interface SetDraft {
@@ -308,6 +325,14 @@ const elapsedLabel = computed(() => {
   )
   return formatDuration(seconds)
 })
+
+const safetyExercises = computed<SafetyExercise[]>(() =>
+  (workout.value?.exercises ?? []).map((exercise) => ({
+    id: exercise.id,
+    label: exercise.exercise_name,
+    exerciseId: exercise.exercise_id,
+  })),
+)
 
 function formatDuration(seconds?: number | null): string {
   if (seconds == null) return '—'

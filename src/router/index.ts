@@ -113,6 +113,12 @@ const router = createRouter({
           component: () => import('../views/app/WorkoutDetailView.vue'),
           meta: { title: 'Workout | JYMZ', requiresProfile: true },
         },
+        {
+          path: 'progress',
+          name: 'app-progress',
+          component: () => import('../views/app/ProgressView.vue'),
+          meta: { title: 'Progress | JYMZ', requiresProfile: true },
+        },
       ],
     },
     {

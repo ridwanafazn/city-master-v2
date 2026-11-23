@@ -1,6 +1,8 @@
 export { apiClient, API_BASE_URL, API_ORIGIN, ApiError, toApiError, setAuthTokenProvider, setUnauthorizedHandler } from './client'
 export { fitnessService } from './fitnessService'
+export { feedbackService } from './feedbackService'
 export { healthService } from './healthService'
 export { meService } from './meService'
 export { plansService } from './plansService'
+export { progressService } from './progressService'
 export { workoutsService } from './workoutsService'

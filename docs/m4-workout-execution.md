@@ -174,7 +174,8 @@ Completed locally:
   successful sync or user/browser data removal.
 - No background sync; the user clicks Sync Now or the app syncs on mount/online.
 - No rest timer or audio cues.
-- No personal-record/progress UI yet (M5).
+- Progress, personal records, feedback, and safety reports are implemented in
+  M5.
 - No workout delete/archive.
 - Substitution candidates use the public `by-focus` endpoint and can take a
   moment to generate; no full dataset search UI.
@@ -182,6 +183,8 @@ Completed locally:
 ## 12. Next milestone
 
 **M5 — Progress, Feedback & Safety**
+
+Implemented in [`m5-progress-feedback.md`](m5-progress-feedback.md):
 
 1. Progress dashboard.
 2. History and insights.
