@@ -8,12 +8,20 @@
 
 > Antarmuka pengguna berkinerja tinggi untuk Sistem Rekomendasi Program Kebugaran. Dibangun untuk memvisualisasikan hasil optimasi dari **Expert System** menggunakan experta dan **Genetic Algorithm** menggunakan pygad secara *real-time* pada FastAPI yang berjalan di python 3.9.11.
 
+> **Status 2026-11-24:** aplikasi sudah mencakup M0–M5 dan UI/UX v2 fase 0–6,
+> sudah di-deploy. Spesifikasi yang diterapkan ada di
+> [`docs/implementation-spec.md`](docs/implementation-spec.md); status deploy dan
+> runbook ada di [`docs/handover.md`](docs/handover.md). Bagian showcase di bawah
+> adalah konteks awal proyek.
+
 ![Bento Grid Dashboard Preview](https://pub-602fa6026a04465d944bea72bc0f7d73.r2.dev/Screenshot%202026-05-09%20112455.png)
 
 ## 📖 Ringkasan
 Repositori ini berisi *source code* lapisan *Frontend* dari proyek tugas akhir **Sistem Rekomendasi Program Fitness Berbasis Aturan dan Algoritma Optimasi Genetika**. Aplikasi ini dirancang untuk menggantikan purwarupa UI statis menjadi *Single Page Application (SPA)* yang interaktif, modular, dan memiliki *Type-Safety* penuh secara *End-to-End*.
 
-Estetika visual menggunakan gaya **Neo-Brutalism** —mengutamakan fungsionalitas, kontras tinggi, dan nuansa *Engineering Console* yang selaras dengan kompleksitas algoritma di belakang layar.
+Estetika visual memakai arah **Signal Editorial** (field manual), dengan token
+dan primitif UI v2. Aturan visual yang mengikat ada di
+[`DESIGN.md`](DESIGN.md).
 
 ## ✨ Fitur Utama
 
@@ -71,6 +79,8 @@ Progress, feedback & safety milestone:
 
 Current status and deployment links:
 [`docs/project-status.md`](docs/project-status.md).  
+Implementation specification (fitur, kontrak, state, UI):
+[`docs/implementation-spec.md`](docs/implementation-spec.md).  
 Handover (status, deploy, verifikasi):
 [`docs/handover.md`](docs/handover.md).  
 UI/UX & performance v2 plan:

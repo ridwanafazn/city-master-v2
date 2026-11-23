@@ -34,7 +34,8 @@ Out of scope:
 - Admin triage UI.
 - Trainer commentary (M6).
 - Wearable imports (later milestone).
-- Charts library; the dashboard uses small CSS bars.
+- Charts library; dashboard UI v2 memakai custom SVG `VolumeChart`, bukan
+  library chart.
 - Background analytics or a data warehouse.
 
 ## 3. Routes and entry points

@@ -1,5 +1,9 @@
 # JYMZ UI/UX v2 — Phase 4: Progress, Profile, Account, Onboarding
 
+> **Status akhir:** fase ini sudah di-commit dan di-deploy bersama UI/UX v2.
+> Dokumen ini adalah catatan fase; spesifikasi terkini ada di
+> [`implementation-spec.md`](implementation-spec.md).
+
 Status: **selesai, menunggu review**
 Tanggal: **2026-11-23**
 Branch: `feat/ui-v2`

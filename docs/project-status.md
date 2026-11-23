@@ -18,6 +18,7 @@ Scope decision: **feature milestones stop at M5 for now**.
 | Portfolio project page | ✅ Updated in Neon |
 | Banner/screenshot assets | ✅ Generated and published |
 | UI/UX v2 | ✅ Complete & deployed (phase 6) |
+| Implementation spec | ✅ [`implementation-spec.md`](implementation-spec.md) |
 | Handover | ✅ Documented in [`handover.md`](handover.md) |
 
 M6 and M7 are intentionally deferred until further notice. They are not
@@ -78,6 +79,9 @@ Deployment targets:
   config.
 - Added [`handover.md`](handover.md) with production state, deploy runbook,
   verification, limitations, and handover checklist.
+- Added [`implementation-spec.md`](implementation-spec.md) consolidating the
+  implemented functional, API, state, UI, performance, and non-functional
+  specifications; historical phase docs now point to it.
 
 ### 2026-11-23
 
@@ -180,7 +184,12 @@ M6 (Collaboration) and M7 (Release hardening) remain deferred indefinitely.
 Future work is maintenance, bug fixes, and operational monitoring unless a new
 explicit request reopens a milestone.
 
-Handover and deploy runbook: [`handover.md`](handover.md).
+Spesifikasi implementasi terkini: [`implementation-spec.md`](implementation-spec.md).  
+Handover dan deploy runbook: [`handover.md`](handover.md).
+
+> Dokumen milestone M0–M5 dan fase UI/UX v2 adalah catatan historis. Jika ada
+> perbedaan dengan implementasi final, lihat `implementation-spec.md` dan kode
+> `main`.
 
 - Baseline: [`ui-ux-v2-baseline.md`](ui-ux-v2-baseline.md)
 - Phase 1: [`ui-ux-v2-phase-1.md`](ui-ux-v2-phase-1.md)

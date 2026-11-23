@@ -1,6 +1,6 @@
 # JYMZ design agreement — Signal Editorial
 
-Status: **locked for UI/UX v2 phase 1**
+Status: **locked for UI/UX v2**
 Tanggal: **2026-11-23**
 Branch: `feat/ui-v2`
 Berlaku untuk: seluruh halaman aplikasi, auth/onboarding, dan public
@@ -153,5 +153,6 @@ Ini bukan preferensi. Pelanggaran harus diperbaiki sebelum review:
 - Specimen: `/style-guide`
 - Bukti dan batasan: `docs/ui-ux-v2-phase-1.md`
 
-Halaman produksi belum dimigrasi. Fase 2 mulai dari AppShell dan Home/Today,
-dengan aturan ini sebagai acceptance criteria.
+Seluruh halaman produksi sudah memakai token dan primitif ini. Spesifikasi
+implementasi terkini ada di [`docs/implementation-spec.md`](docs/implementation-spec.md);
+aturan visual di dokumen ini tetap mengikat.

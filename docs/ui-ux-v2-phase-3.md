@@ -1,5 +1,9 @@
 # JYMZ UI/UX v2 — Phase 3: Plans + Workout
 
+> **Status akhir:** fase ini sudah di-commit dan di-deploy bersama UI/UX v2.
+> Dokumen ini adalah catatan fase; spesifikasi terkini ada di
+> [`implementation-spec.md`](implementation-spec.md).
+
 Status: **selesai, menunggu review**
 Tanggal: **2026-11-23**
 Branch: `feat/ui-v2`
@@ -19,6 +23,7 @@ Workout logger, serta Feedback/Safety forms ke UI v2. Kontrak API tidak diubah.
 - Header dengan satu CTA `Buat plan`.
 - Plan disajikan sebagai **ledger rows**, bukan grid kartu seragam.
 - Setiap baris: judul, split, jumlah hari, versi, tanggal, status, `Buka`.
+- Halaman memakai judul **Daftar plan** (bukan “Plan library”).
 - Empty state, error state, skeleton, dan load more.
 - Status aktif memakai badge hijau; versi dan tanggal memakai mono.
 
@@ -30,7 +35,8 @@ Workout logger, serta Feedback/Safety forms ke UI v2. Kontrak API tidak diubah.
 - Exercise rows menampilkan nama, body part, equipment, lock/swap.
 - `Regenerate` per hari; `Mulai sesi` di day header dan sticky bar mobile.
 - Sidebar:
-  - metadata (seed, dataset, algorithm, tanggal);
+  - ringkasan plan: split, jumlah hari, versi, tanggal; metadata teknis
+    seed/dataset/algorithm tidak ditampilkan di UI user;
   - share link (masa berlaku, buat, salin, cabut);
   - riwayat versi collapsible;
   - hapus plan memakai `Dialog` konfirmasi.

@@ -4,6 +4,11 @@ Dokumen ini adalah titik masuk untuk handover proyek JYMZ. Isinya merangkum
 status produk, repo, deployment produksi, cara deploy ulang, verifikasi, dan
 batasan yang masih berlaku.
 
+Spesifikasi fitur dan kontrak yang benar-benar diterapkan ada di
+[`implementation-spec.md`](implementation-spec.md). Dokumen milestone/fase
+adalah catatan historis; jika berbeda, implementation spec dan kode `main`
+yang berlaku.
+
 - Tanggal handover: **2026-11-24**
 - Status: **M0–M5 + UI/UX v2 fase 0–6 selesai dan deployed**
 - M6 (Collaboration) dan M7 (Release hardening): **deferred indefinitely**
@@ -317,6 +322,8 @@ tetap sama; redeploy hanya perlu jika menginginkan commit produksi sama persis.
 
 ## 10. Dokumen terkait
 
+- [`implementation-spec.md`](implementation-spec.md) — spesifikasi fitur,
+  kontrak API, state, UI, dan batasan yang diterapkan.
 - [`project-status.md`](project-status.md) — status dan event log.
 - [`ui-ux-v2-plan.md`](ui-ux-v2-plan.md) — rencana dan acceptance criteria.
 - [`ui-ux-v2-phase-6.md`](ui-ux-v2-phase-6.md) — performance, QA, deployment.

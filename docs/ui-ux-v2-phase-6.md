@@ -209,4 +209,5 @@ UI/UX v2 selesai dan berjalan di produksi. M6/M7 tetap deferred. Perubahan
 berikutnya memerlukan review baru.
 
 Status produksi, perintah deploy ulang, dan checklist handover dicatat di
-[`handover.md`](handover.md).
+[`handover.md`](handover.md). Spesifikasi fitur/kontrak yang diterapkan ada di
+[`implementation-spec.md`](implementation-spec.md).

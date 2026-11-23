@@ -173,7 +173,8 @@ Completed locally:
 - Queue and cache are browser-local and not encrypted; they are cleared only by
   successful sync or user/browser data removal.
 - No background sync; the user clicks Sync Now or the app syncs on mount/online.
-- No rest timer or audio cues.
+- No rest timer persistence; rest timer 90 detik sudah ada di UI v2 phase 3,
+  tetapi hilang setelah reload. Tidak ada audio cue.
 - Progress, personal records, feedback, and safety reports are implemented in
   M5.
 - No workout delete/archive.
