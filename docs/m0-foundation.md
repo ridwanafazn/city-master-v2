@@ -33,6 +33,11 @@ recommendation demo.
 Do not start M4 before M3 is stable. Do not start M6 before auth, consent, and
 plan lifecycle are stable.
 
+> **Status update (2026-11-23):** M0–M5 are complete. **M6 and M7 are deferred
+> indefinitely.** The next active workstream is UI/UX and performance v2; see
+> [`ui-ux-v2-plan.md`](ui-ux-v2-plan.md) and
+> [`project-status.md`](project-status.md).
+
 ## 3. M0 scope
 
 ### In scope

@@ -1,0 +1,124 @@
+# JYMZ project status
+
+Last updated: **2026-11-23**  
+Branch: `feat/app-v2`  
+Scope decision: **feature milestones stop at M5 for now**.
+
+## 1. Status summary
+
+| Area | Status |
+|---|---|
+| Product milestones M0–M5 | ✅ Complete |
+| M6 — Collaboration | ⏸ Deferred indefinitely |
+| M7 — Release hardening | ⏸ Deferred indefinitely |
+| Frontend production | ✅ Cloudflare Pages |
+| Backend production | ✅ Railway |
+| Database / auth | ✅ Neon Postgres + Neon Auth |
+| Public recommendation flow | ✅ Preserved |
+| Portfolio project page | ✅ Updated in Neon |
+| Banner/screenshot assets | ✅ Generated and published |
+| UI/UX v2 | 📝 Planned, not started |
+
+M6 and M7 are intentionally deferred until further notice. They are not
+required for the current product scope. The next active workstream is the
+UI/UX and performance overhaul described in
+[`ui-ux-v2-plan.md`](ui-ux-v2-plan.md).
+
+## 2. Completed milestones
+
+| Milestone | Commit | Notes |
+|---|---|---|
+| M0 Foundation | `e8d1e60` | App shell, API client, health/readiness |
+| M1 Auth & account | `4cd184f` | Neon Auth, protected `/app`, account page |
+| M2 Onboarding & profile | `cc36e28` | Profile, equipment, injuries, consent, export |
+| M3 Plan lifecycle | `1611d28` | Save/list/detail/lock/swap/share/PDF/ICS |
+| M4 Workout execution | `e146af8` | Live logger, substitution, completion, offline sync |
+| M5 Progress, feedback & safety | `49024f6` | Progress deck, PR, insights, feedback, safety reports |
+
+## 3. Live services
+
+| Service | URL |
+|---|---|
+| Frontend | https://jymz.pages.dev |
+| App | https://jymz.pages.dev/app |
+| Backend | https://jymz-api-production.up.railway.app |
+| API base | https://jymz-api-production.up.railway.app/api/v1 |
+| Health | https://jymz-api-production.up.railway.app/health |
+| Readiness | https://jymz-api-production.up.railway.app/ready |
+| API docs | https://jymz-api-production.up.railway.app/docs |
+| Asset downloads | https://jymz-assets.pages.dev |
+| Portfolio page | https://ridwanafazn.my.id/projects/jymz |
+
+Deployment targets:
+
+- Frontend: Cloudflare Pages project `jymz`.
+- Backend: Railway project `gregarious-rejoicing`, service `jymz-api`,
+  region Southeast Asia.
+- Asset pack: Cloudflare Pages project `jymz-assets`.
+- Frontend API env: Railway API base.
+- CORS: exact origin `https://jymz.pages.dev`.
+
+## 4. Event log
+
+### 2026-11-23
+
+- Completed M5 frontend work.
+- Merged `feat/app-v2` to `main` and deployed frontend to
+  `https://jymz.pages.dev`.
+- Deployed backend to Railway at
+  `https://jymz-api-production.up.railway.app`; database readiness `ok`.
+- Applied Alembic migrations; current revision `0010_outbox_lease`.
+- Verified production auth, plans, workouts, progress, feedback, and public
+  recommendation flow.
+- Generated HTML-rendered banner assets and screenshot pack.
+- Published asset download page at `https://jymz-assets.pages.dev`.
+- Copied banner assets to `portofx/public/jymz/`.
+- Updated the JYMZ portfolio project row in the `portofx-v2` Neon project:
+  description, long description, role, stack, highlights, links, gallery
+  order/captions, and SEO.
+- Decided UI/UX v2 direction:
+  - Style A: Signal Editorial.
+  - Scope: all pages, including public flow.
+  - No dark mode.
+  - Keep cold-start UX for Railway Free.
+  - Use Lucide icons.
+- Deferred M6 and M7 indefinitely.
+
+## 5. Known limitations
+
+1. Railway Free sleeps after idle. First request may be slow; this is accepted
+   for now and must be handled in the UI as a wake/loading state.
+2. Multi-day plans with a `knee` injury can still return `422 plan_invalid`
+   from the backend validation bug (cardio day has 2 exercises, validator
+   expects 3). The frontend surfaces an actionable message.
+3. Progress aggregates rebuild on read. Parallel progress/insights requests can
+   hit a unique constraint; the frontend serializes requests.
+4. M5 test data is small (two completed sessions), so charts and pagination are
+   lightly exercised.
+5. No admin triage UI for safety reports.
+6. No user-facing feedback history.
+7. The banner source and final assets are currently documentation files, not
+   part of the app bundle.
+
+## 6. Deferred work
+
+### M6 — Collaboration
+
+Trainer profile and clients, invitations and scopes, comments and reviews,
+notifications/calendar, organizations.
+
+**Status:** deferred indefinitely. Do not start without a new explicit request.
+
+### M7 — Release hardening
+
+Staging environment, E2E suite, performance gates, rollback plan, operational
+runbook.
+
+**Status:** deferred indefinitely. The current deployment is a lightweight
+production deploy, not full M7 hardening.
+
+## 7. Next workstream
+
+**UI/UX & performance v2** — planning complete, implementation not started.
+
+See [`ui-ux-v2-plan.md`](ui-ux-v2-plan.md).

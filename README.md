@@ -69,7 +69,23 @@ Workout milestone: [`docs/m4-workout-execution.md`](docs/m4-workout-execution.md
 Progress, feedback & safety milestone:
 [`docs/m5-progress-feedback.md`](docs/m5-progress-feedback.md).
 
+Current status and deployment links:
+[`docs/project-status.md`](docs/project-status.md).  
+UI/UX & performance v2 plan:
+[`docs/ui-ux-v2-plan.md`](docs/ui-ux-v2-plan.md).
+
 M1 needs the backend restarted with `AUTH_ENABLED=true`,
 `AUTH_PROFILES_ENABLED=true`, and `VITE_NEON_AUTH_URL` set in the frontend env.  
 M5 needs `PROGRESS_ENABLED=true` and `FEEDBACK_ENABLED=true` in addition to the
 workout flags.
+
+> **Scope update (2026-11-23):** M0–M5 are complete. **M6 (Collaboration) and
+> M7 (Release hardening) are deferred indefinitely.** The next active workstream
+> is UI/UX & performance v2, starting only after the plan is reviewed.
+
+Live services:
+
+- App: https://jymz.pages.dev
+- API: https://jymz-api-production.up.railway.app
+- Asset downloads: https://jymz-assets.pages.dev
+- Project page: https://ridwanafazn.my.id/projects/jymz

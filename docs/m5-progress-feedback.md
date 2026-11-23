@@ -169,6 +169,11 @@ Completed locally against the local backend:
 
 ## 11. Next milestone
 
+> **Status update (2026-11-23):** M6 and M7 are **deferred indefinitely**.
+> The next active workstream is the UI/UX and performance overhaul in
+> [`ui-ux-v2-plan.md`](ui-ux-v2-plan.md). The list below is retained as the
+> original M6 outline, not as active work.
+
 **M6 — Collaboration**
 
 1. Trainer profile and client list.
