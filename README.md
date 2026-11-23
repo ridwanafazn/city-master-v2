@@ -38,3 +38,26 @@ Bagian ini menyoroti antarmuka pengguna yang disajikan dalam presentasi sidang s
 | :---: | :---: | :---: |
 | ![Config View](https://pub-602fa6026a04465d944bea72bc0f7d73.r2.dev/Screenshot%202026-05-09%20112301.png) | ![Process View](https://pub-602fa6026a04465d944bea72bc0f7d73.r2.dev/Screenshot%202026-05-09%20112351.png) | ![Daily View](https://pub-602fa6026a04465d944bea72bc0f7d73.r2.dev/Screenshot%202026-05-09%20112902.png) |
 | *Parameter Biometrik dan Batasan Genetik* | *Live Log Eksekusi Algoritma* | *Tab Navigasi Jadwal Harian* |
+
+## 🧱 App v2 development (M0)
+
+Frontend sedang dikembangkan menjadi aplikasi JYMZ penuh di branch `feat/app-v2`.
+Rancangan milestone dan kontrak M0 ada di
+[`docs/m0-foundation.md`](docs/m0-foundation.md).
+
+Ringkasan lokal:
+
+```powershell
+# backend (repo jymz-hardening)
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8080
+
+# frontend
+Copy-Item .env.example .env.local
+npm install
+npm run dev -- --host 127.0.0.1 --port 5173
+```
+
+- Public recommendation: `http://127.0.0.1:5173/`
+- App control room: `http://127.0.0.1:5173/app`
+- API base URL: `VITE_API_BASE_URL` (default `http://localhost:8080/api/v1`)
+- Backend flags stay off until their frontend milestone needs them.

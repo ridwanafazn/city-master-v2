@@ -119,8 +119,9 @@ const activeDayData = computed(() => {
 
 // Jika result baru masuk, otomatis reset view ke Day 1
 watch(result, (newVal) => {
-  if (newVal && newVal.days.length > 0) {
-    activeDayIndex.value = newVal.days[0].day
+  const firstDay = newVal?.days[0]
+  if (firstDay) {
+    activeDayIndex.value = firstDay.day
   }
 })
 
@@ -136,7 +137,10 @@ const recalibrate = () => router.push('/')
 
 onMounted(() => {
   if (!result.value) router.push('/')
-  else if (result.value.days.length > 0) activeDayIndex.value = result.value.days[0].day
+  else {
+    const firstDay = result.value.days[0]
+    if (firstDay) activeDayIndex.value = firstDay.day
+  }
 })
 </script>
 
