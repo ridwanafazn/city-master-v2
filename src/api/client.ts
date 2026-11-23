@@ -42,8 +42,9 @@ export class ApiError extends Error {
   }
 }
 
-type TokenProvider = () => string | null | undefined
+type TokenProvider = () => string | null | undefined | Promise<string | null | undefined>
 let authTokenProvider: TokenProvider | null = null
+let unauthorizedHandler: (() => void) | null = null
 
 /**
  * M1 connects this to the Neon Auth session store. Keeping the provider behind
@@ -52,6 +53,10 @@ let authTokenProvider: TokenProvider | null = null
  */
 export function setAuthTokenProvider(provider: TokenProvider | null): void {
   authTokenProvider = provider
+}
+
+export function setUnauthorizedHandler(handler: (() => void) | null): void {
+  unauthorizedHandler = handler
 }
 
 function asEnvelope(data: unknown): ApiErrorEnvelope {
@@ -104,10 +109,15 @@ export const apiClient = axios.create({
   },
 })
 
-apiClient.interceptors.request.use((config) => {
-  const token = authTokenProvider?.()
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+apiClient.interceptors.request.use(async (config) => {
+  if (!authTokenProvider) return config
+  try {
+    const token = await authTokenProvider()
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+  } catch {
+    // Let the request proceed anonymously; a 401 will trigger the auth handler.
   }
   return config
 })
@@ -122,7 +132,13 @@ apiClient.interceptors.response.use(
     }
     return response
   },
-  (error: unknown) => Promise.reject(toApiError(error)),
+  (error: unknown) => {
+    const apiError = toApiError(error)
+    if (apiError.status === 401) {
+      unauthorizedHandler?.()
+    }
+    return Promise.reject(apiError)
+  },
 )
 
 export type ApiRequestConfig = AxiosRequestConfig

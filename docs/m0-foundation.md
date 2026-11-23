@@ -164,7 +164,7 @@ Copy-Item .env.example .env.local
 npm run dev -- --host 127.0.0.1 --port 5173
 ```
 
-Open `http://127.0.0.1:5173`.
+Open `http://localhost:5173`.
 
 ## 6. M0 acceptance
 
@@ -185,3 +185,5 @@ Open `http://127.0.0.1:5173`.
 3. Axios bearer token provider.
 4. Protected `/app` routes.
 5. `GET /me` bootstrap and account page.
+
+Implemented in [`m1-auth-and-account.md`](m1-auth-and-account.md).

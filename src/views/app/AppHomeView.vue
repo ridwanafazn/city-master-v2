@@ -4,16 +4,16 @@
       <div>
         <div class="flex items-center gap-2 mb-2">
           <span class="bg-blue-500 text-white border-2 border-slate-900 px-2 py-1 font-mono text-[10px] font-black uppercase">
-            M0 · Foundation
+            M1 · Auth & Account
           </span>
-          <span class="font-mono text-[10px] text-slate-500 uppercase">App shell online</span>
+          <span class="font-mono text-[10px] text-slate-500 uppercase">Neon Auth session active</span>
         </div>
         <h1 class="text-4xl md:text-5xl font-black uppercase tracking-tighter">
           Control <span class="text-blue-600">Room</span>
         </h1>
         <p class="text-slate-600 mt-2 font-mono text-sm max-w-2xl">
-          [SYS_MSG]: Frontend foundation is wired to the local FastAPI backend.
-          Auth, plans, workouts, and progress arrive in the next milestones.
+          [SYS_MSG]: Authenticated with Neon Auth and mapped to the FastAPI user
+          record. Onboarding, plans, and workouts arrive in the next milestones.
         </p>
       </div>
       <div class="flex gap-2">
@@ -66,7 +66,25 @@
         </div>
       </PixelCard>
 
-      <PixelCard title="M0 Checklist">
+      <PixelCard title="Session">
+        <template #action>
+          <RouterLink to="/app/account" class="font-mono text-[10px] font-black uppercase underline">
+            Account
+          </RouterLink>
+        </template>
+        <div class="space-y-2 font-mono text-sm">
+          <StatusRow label="Operator" :value="auth.displayName" />
+          <StatusRow label="Email" :value="auth.email || '—'" />
+          <StatusRow label="Roles" :value="auth.roles.length ? auth.roles.join(', ') : 'user'" />
+          <StatusRow label="Profile Complete" :value="auth.profileComplete ? 'yes' : 'no'" />
+          <StatusRow label="Consent" :value="consentSummary" />
+          <StatusRow label="User ID" :value="auth.me?.user.id ?? '—'" />
+        </div>
+      </PixelCard>
+    </section>
+
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <PixelCard title="M1 Checklist">
         <ul class="space-y-2 font-mono text-xs">
           <li v-for="item in checklist" :key="item.label" class="flex gap-2">
             <span
@@ -79,30 +97,19 @@
           </li>
         </ul>
       </PixelCard>
-    </section>
 
-    <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <PixelCard title="Next: M1 Auth & Account">
+      <PixelCard title="Next: M2 Onboarding & Profile">
         <ol class="space-y-2 font-mono text-sm list-decimal list-inside">
-          <li>Neon Auth client + callback</li>
-          <li>Pinia session store</li>
-          <li>Axios bearer token provider</li>
-          <li>Protected <code class="bg-slate-100 px-1">/app</code> routes</li>
-          <li><code class="bg-slate-100 px-1">GET /me</code> bootstrap + account page</li>
+          <li>Onboarding wizard</li>
+          <li>Profile fields</li>
+          <li>Equipment + injuries</li>
+          <li>Health-data consent gate</li>
+          <li>Consent management + export</li>
         </ol>
         <p class="mt-4 text-xs text-slate-500 font-mono">
-          Token provider hook is already exposed by <code>src/api/client.ts</code>.
+          Account and consent state are already available at
+          <RouterLink to="/app/account" class="underline">/app/account</RouterLink>.
         </p>
-      </PixelCard>
-
-      <PixelCard title="Guardrails">
-        <ul class="space-y-2 font-mono text-sm">
-          <li>Public recommendation flow stays available at <code class="bg-slate-100 px-1">/</code>.</li>
-          <li>No token is persisted by M0 code.</li>
-          <li>Backend feature flags stay off until their milestone.</li>
-          <li>All API errors normalize to <code class="bg-slate-100 px-1">ApiError</code>.</li>
-          <li>Local backend: <code class="bg-slate-100 px-1">127.0.0.1:8080</code>.</li>
-        </ul>
       </PixelCard>
     </section>
   </div>
@@ -114,16 +121,26 @@ import PixelButton from '../../components/ui/PixelButton.vue'
 import PixelCard from '../../components/ui/PixelCard.vue'
 import StatusRow from '../../components/ui/StatusRow.vue'
 import { useAppStore } from '../../stores/appStore'
+import { useAuthStore } from '../../stores/authStore'
 
 const appStore = useAppStore()
+const auth = useAuthStore()
 
 const checklist = [
-  { label: 'App shell and routes', done: true },
-  { label: 'Typed API client and error normalization', done: true },
-  { label: 'Local env and CORS setup', done: true },
-  { label: 'Backend health + readiness view', done: true },
-  { label: 'Public recommendation regression checked', done: true },
+  { label: 'Neon Auth client + provider', done: true },
+  { label: 'Session restoration after reload', done: true },
+  { label: 'Axios bearer token interceptor', done: true },
+  { label: 'Protected /app routes', done: true },
+  { label: 'GET /me bootstrap', done: true },
+  { label: 'Account page + sign out', done: true },
 ]
+
+const consentSummary = computed(() => {
+  const entries = Object.entries(auth.consents)
+  if (!entries.length) return 'none'
+  const granted = entries.filter(([, value]) => value).map(([key]) => key)
+  return granted.length ? granted.join(', ') : 'none granted'
+})
 
 const statusLabel = computed(() => {
   switch (appStore.backendStatus) {

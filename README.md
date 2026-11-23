@@ -57,7 +57,11 @@ npm install
 npm run dev -- --host 127.0.0.1 --port 5173
 ```
 
-- Public recommendation: `http://127.0.0.1:5173/`
-- App control room: `http://127.0.0.1:5173/app`
+- Public recommendation: `http://localhost:5173/`
+- App control room: `http://localhost:5173/app`
 - API base URL: `VITE_API_BASE_URL` (default `http://localhost:8080/api/v1`)
 - Backend flags stay off until their frontend milestone needs them.
+
+Auth milestone: [`docs/m1-auth-and-account.md`](docs/m1-auth-and-account.md).
+M1 needs the backend restarted with `AUTH_ENABLED=true`,
+`AUTH_PROFILES_ENABLED=true`, and `VITE_NEON_AUTH_URL` set in the frontend env.

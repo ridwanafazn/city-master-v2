@@ -1,12 +1,18 @@
 // src/router/index.ts
 
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '../stores/authStore'
+
+declare module 'vue-router' {
+  interface RouteMeta {
+    title?: string
+    requiresAuth?: boolean
+    guestOnly?: boolean
+  }
+}
 
 /**
- * Public recommendation flow + application shell.
- *
- * M0 keeps /app open; M1 adds the Neon Auth guard and redirects anonymous
- * users to /login.
+ * Public recommendation flow + authenticated JYMZ application.
  */
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -30,15 +36,33 @@ const router = createRouter({
       meta: { title: 'Dashboard | Fitness-RS' },
     },
     {
+      path: '/auth/sign-in',
+      name: 'sign-in',
+      component: () => import('../views/auth/SignInView.vue'),
+      meta: { title: 'Sign In | JYMZ', guestOnly: true },
+    },
+    {
+      path: '/auth/sign-up',
+      name: 'sign-up',
+      component: () => import('../views/auth/SignUpView.vue'),
+      meta: { title: 'Create Account | JYMZ', guestOnly: true },
+    },
+    {
       path: '/app',
       component: () => import('../components/layout/AppShell.vue'),
-      meta: { title: 'App Console | JYMZ' },
+      meta: { title: 'App Console | JYMZ', requiresAuth: true },
       children: [
         {
           path: '',
           name: 'app-home',
           component: () => import('../views/app/AppHomeView.vue'),
           meta: { title: 'Control Room | JYMZ' },
+        },
+        {
+          path: 'account',
+          name: 'app-account',
+          component: () => import('../views/app/AccountView.vue'),
+          meta: { title: 'Account | JYMZ' },
         },
       ],
     },
@@ -52,10 +76,29 @@ const router = createRouter({
   },
 })
 
-router.beforeEach((to, _from, next) => {
-  const defaultTitle = 'JYMZ App Console'
-  document.title = (to.meta.title as string) || defaultTitle
-  next()
+router.beforeEach(async (to) => {
+  document.title = to.meta.title || 'JYMZ App Console'
+  const auth = useAuthStore()
+
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    await auth.initialize()
+    if (!auth.isAuthenticated) {
+      return {
+        name: 'sign-in',
+        query: { redirectTo: to.fullPath },
+        replace: true,
+      }
+    }
+  }
+
+  if (to.matched.some((record) => record.meta.guestOnly)) {
+    await auth.initialize()
+    if (auth.isAuthenticated) {
+      return { name: 'app-home', replace: true }
+    }
+  }
+
+  return true
 })
 
 export default router
