@@ -1,7 +1,6 @@
 // src/router/index.ts
 
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore } from '../stores/authStore'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -10,6 +9,11 @@ declare module 'vue-router' {
     requiresProfile?: boolean
     guestOnly?: boolean
   }
+}
+
+async function getAuthStore() {
+  const { useAuthStore } = await import('../stores/authStore')
+  return useAuthStore()
 }
 
 /**
@@ -22,108 +26,114 @@ const router = createRouter({
       path: '/',
       name: 'config',
       component: () => import('../views/ConfigView.vue'),
-      meta: { title: 'Engine Parameters | Fitness-RS' },
+      meta: { title: 'Parameter latihan | JYMZ' },
     },
     {
       path: '/process',
       name: 'process',
       component: () => import('../views/ProcessView.vue'),
-      meta: { title: 'Optimization Console | Fitness-RS' },
+      meta: { title: 'Konsol optimasi | JYMZ' },
     },
     {
       path: '/dashboard',
       name: 'dashboard',
       component: () => import('../views/DashboardView.vue'),
-      meta: { title: 'Dashboard | Fitness-RS' },
+      meta: { title: 'Hasil optimasi | JYMZ' },
     },
     {
       path: '/style-guide',
       name: 'style-guide',
       component: () => import('../views/StyleGuideView.vue'),
-      meta: { title: 'Style Guide | JYMZ' },
+      meta: { title: 'Style guide | JYMZ' },
     },
     {
       path: '/auth/sign-in',
       name: 'sign-in',
       component: () => import('../views/auth/SignInView.vue'),
-      meta: { title: 'Sign In | JYMZ', guestOnly: true },
+      meta: { title: 'Masuk | JYMZ', guestOnly: true },
     },
     {
       path: '/auth/sign-up',
       name: 'sign-up',
       component: () => import('../views/auth/SignUpView.vue'),
-      meta: { title: 'Create Account | JYMZ', guestOnly: true },
+      meta: { title: 'Buat akun | JYMZ', guestOnly: true },
     },
     {
       path: '/shared/:token',
       name: 'shared-plan',
       component: () => import('../views/shared/PublicPlanView.vue'),
-      meta: { title: 'Shared Plan | JYMZ' },
+      meta: { title: 'Plan dibagikan | JYMZ' },
     },
     {
       path: '/app',
       component: () => import('../components/layout/AppShell.vue'),
-      meta: { title: 'App Console | JYMZ', requiresAuth: true },
+      meta: { title: 'Aplikasi | JYMZ', requiresAuth: true },
       children: [
         {
           path: '',
           name: 'app-home',
           component: () => import('../views/app/AppHomeView.vue'),
-          meta: { title: 'Control Room | JYMZ' },
+          meta: { title: 'Hari ini | JYMZ' },
         },
         {
           path: 'account',
           name: 'app-account',
           component: () => import('../views/app/AccountView.vue'),
-          meta: { title: 'Account | JYMZ' },
+          meta: { title: 'Akun | JYMZ' },
         },
         {
           path: 'onboarding',
           name: 'app-onboarding',
           component: () => import('../views/app/OnboardingView.vue'),
-          meta: { title: 'Profile Setup | JYMZ' },
+          meta: { title: 'Siapkan profil | JYMZ' },
         },
         {
           path: 'profile',
           name: 'app-profile',
           component: () => import('../views/app/ProfileSettingsView.vue'),
-          meta: { title: 'Profile Settings | JYMZ' },
+          meta: { title: 'Profil latihan | JYMZ' },
         },
         {
           path: 'plans',
           name: 'app-plans',
           component: () => import('../views/app/PlanListView.vue'),
-          meta: { title: 'Plan Library | JYMZ', requiresProfile: true },
+          meta: { title: 'Plan | JYMZ', requiresProfile: true },
         },
         {
           path: 'plans/new',
           name: 'app-plan-new',
           component: () => import('../views/app/PlanCreateView.vue'),
-          meta: { title: 'Generate Plan | JYMZ', requiresProfile: true },
+          meta: { title: 'Buat plan | JYMZ', requiresProfile: true },
         },
         {
           path: 'plans/:planId',
           name: 'app-plan-detail',
           component: () => import('../views/app/PlanDetailView.vue'),
-          meta: { title: 'Plan Detail | JYMZ', requiresProfile: true },
+          meta: { title: 'Detail plan | JYMZ', requiresProfile: true },
         },
         {
           path: 'workouts',
           name: 'app-workouts',
           component: () => import('../views/app/WorkoutHistoryView.vue'),
-          meta: { title: 'Workout History | JYMZ', requiresProfile: true },
+          meta: { title: 'Riwayat sesi | JYMZ', requiresProfile: true },
         },
         {
           path: 'workouts/:workoutId',
           name: 'app-workout-detail',
           component: () => import('../views/app/WorkoutDetailView.vue'),
-          meta: { title: 'Workout | JYMZ', requiresProfile: true },
+          meta: { title: 'Sesi latihan | JYMZ', requiresProfile: true },
         },
         {
           path: 'progress',
           name: 'app-progress',
           component: () => import('../views/app/ProgressView.vue'),
-          meta: { title: 'Progress | JYMZ', requiresProfile: true },
+          meta: { title: 'Progres | JYMZ', requiresProfile: true },
+        },
+        {
+          path: 'debug',
+          name: 'app-debug',
+          component: () => import('../views/app/DebugView.vue'),
+          meta: { title: 'Diagnostics | JYMZ', requiresAuth: true },
         },
       ],
     },
@@ -138,11 +148,11 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to) => {
-  document.title = to.meta.title || 'JYMZ App Console'
-  const auth = useAuthStore()
+  document.title = to.meta.title || 'JYMZ'
 
   if (to.matched.some((record) => record.meta.requiresAuth)) {
-    await auth.initialize()
+    const auth = await getAuthStore()
+    await auth.ensureSession()
     if (!auth.isAuthenticated) {
       return {
         name: 'sign-in',
@@ -153,7 +163,8 @@ router.beforeEach(async (to) => {
   }
 
   if (to.matched.some((record) => record.meta.requiresProfile)) {
-    await auth.initialize()
+    const auth = await getAuthStore()
+    await auth.ensureSession()
     if (!auth.isAuthenticated) {
       return {
         name: 'sign-in',
@@ -161,7 +172,10 @@ router.beforeEach(async (to) => {
         replace: true,
       }
     }
-    if (!auth.profileComplete) {
+    if (!auth.me) {
+      await auth.loadMe()
+    }
+    if (auth.me && !auth.profileComplete) {
       return {
         name: 'app-onboarding',
         query: { redirectTo: to.fullPath },
@@ -170,12 +184,9 @@ router.beforeEach(async (to) => {
     }
   }
 
-  if (to.matched.some((record) => record.meta.guestOnly)) {
-    await auth.initialize()
-    if (auth.isAuthenticated) {
-      return { name: 'app-home', replace: true }
-    }
-  }
+  // guestOnly pages render immediately and redirect themselves if a session
+  // already exists. Blocking here used to delay the sign-in form behind
+  // Neon Auth get-session on every visit.
 
   return true
 })

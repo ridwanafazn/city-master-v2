@@ -1,66 +1,45 @@
 <template>
-  <PixelCard title="Report Unsafe Exercise">
-    <div class="space-y-3">
-      <div>
-        <label class="pixel-label">Exercise</label>
-        <select v-model="selectedId" class="pixel-input text-xs">
-          <option v-for="exercise in exercises" :key="exercise.id" :value="exercise.id">
-            {{ exercise.label }}
-          </option>
-        </select>
-      </div>
+  <section class="feedback-form" aria-labelledby="safety-title">
+    <h3 id="safety-title">Laporkan exercise tidak aman</h3>
 
-      <div>
-        <label class="pixel-label">Severity</label>
-        <select v-model="severity" class="pixel-input text-xs">
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-          <option value="critical">Critical</option>
-        </select>
-      </div>
+    <AppSelect v-model="selectedId" label="Exercise" :options="exerciseOptions" />
+    <AppSelect v-model="severity" label="Severity" :options="severityOptions" />
+    <AppTextarea
+      v-model="reason"
+      label="Alasan"
+      :rows="3"
+      maxlength="2000"
+      placeholder="Jelaskan gerakan atau nyeri yang tidak aman."
+      hint="Minimal 5 karakter, maksimal 2.000."
+    />
 
-      <div>
-        <label class="pixel-label">Reason</label>
-        <textarea
-          v-model.trim="reason"
-          class="pixel-input min-h-[80px] text-xs"
-          maxlength="2000"
-          placeholder="Describe the unsafe movement or pain"
-        />
-      </div>
+    <p v-if="feedbackStore.error" class="feedback-alert" role="alert">
+      {{ feedbackStore.error }}
+    </p>
+    <p v-else-if="sent" class="feedback-notice" role="status">
+      Safety report terkirim. Tim akan meninjau.
+    </p>
 
-      <div
-        v-if="feedbackStore.error"
-        class="border-3 border-red-700 bg-red-50 p-2 font-mono text-xs text-red-800"
+    <div class="feedback-actions">
+      <AppButton
+        variant="danger"
+        :disabled="reason.length < 5 || !selected"
+        :loading="feedbackStore.submitting"
+        @click="submit"
       >
-        {{ feedbackStore.error }}
-      </div>
-      <div
-        v-else-if="sent"
-        class="border-3 border-green-700 bg-green-50 p-2 font-mono text-xs text-green-900"
-      >
-        Safety report terkirim. Tim akan meninjau.
-      </div>
-
-      <div class="flex justify-end">
-        <PixelButton
-          variant="danger"
-          :disabled="feedbackStore.submitting || reason.length < 5 || !selected"
-          @click="submit"
-        >
-          {{ feedbackStore.submitting ? 'Sending…' : 'Send Safety Report' }}
-        </PixelButton>
-      </div>
+        Kirim safety report
+      </AppButton>
     </div>
-  </PixelCard>
+  </section>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import PixelButton from '../ui/PixelButton.vue'
-import PixelCard from '../ui/PixelCard.vue'
+import AppButton from '../ui-v2/AppButton.vue'
+import AppSelect from '../ui-v2/AppSelect.vue'
+import AppTextarea from '../ui-v2/AppTextarea.vue'
 import { useFeedbackStore } from '../../stores/feedbackStore'
+import type { UiOption } from '../ui-v2'
 import type { SafetyExercise, SafetySeverity } from '../../types/feedback'
 
 const props = defineProps<{
@@ -75,6 +54,15 @@ const severity = ref<SafetySeverity>('medium')
 const reason = ref('')
 const sent = ref(false)
 
+const exerciseOptions = computed<UiOption[]>(() =>
+  props.exercises.map((exercise) => ({ value: exercise.id, label: exercise.label })),
+)
+const severityOptions: UiOption[] = [
+  { value: 'low', label: 'Low' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'high', label: 'High' },
+  { value: 'critical', label: 'Critical' },
+]
 const selected = computed(
   () => props.exercises.find((item) => item.id === selectedId.value) ?? null,
 )
@@ -106,3 +94,45 @@ async function submit() {
   }
 }
 </script>
+
+<style scoped>
+.feedback-form {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-raised);
+}
+
+.feedback-form h3 {
+  margin: 0;
+  font-size: var(--text-h3);
+}
+
+.feedback-alert,
+.feedback-notice {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: var(--radius-control);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.feedback-alert {
+  border: 1px solid #f7d1cd;
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+.feedback-notice {
+  border: 1px solid #cfe6bf;
+  background: var(--color-success-bg);
+  color: var(--color-success-ink);
+}
+
+.feedback-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+</style>

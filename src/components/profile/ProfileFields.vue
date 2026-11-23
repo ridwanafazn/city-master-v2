@@ -1,119 +1,57 @@
 <template>
-  <div class="space-y-5">
-    <div v-if="showDisplayName">
-      <label class="pixel-label" for="profile-display-name">Display name</label>
-      <input
-        id="profile-display-name"
-        v-model.trim="displayName"
-        class="pixel-input"
-        type="text"
-        maxlength="100"
-        autocomplete="name"
-        placeholder="Nama yang tampil di akun"
+  <div class="profile-fields">
+    <AppInput
+      v-if="showDisplayName"
+      v-model="displayName"
+      label="Nama tampilan"
+      autocomplete="name"
+      maxlength="100"
+      placeholder="Nama yang tampil di akun"
+    />
+
+    <div class="profile-fields__grid">
+      <AppSelect v-model="profile.gender" label="Gender" :options="genderOptions" />
+      <AppSelect v-model="profile.goal" label="Tujuan" :options="goalOptions" />
+      <AppInput
+        v-model="heightModel"
+        label="Tinggi (cm)"
+        type="number"
+        min="51"
+        max="300"
+        step="0.5"
+        required
+        inputmode="decimal"
       />
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <div>
-        <label class="pixel-label" for="profile-gender">Gender</label>
-        <select id="profile-gender" v-model="profile.gender" class="pixel-input">
-          <option v-for="option in GENDER_OPTIONS" :key="option.value" :value="option.value">
-            {{ option.label }}
-          </option>
-        </select>
-      </div>
-
-      <div>
-        <label class="pixel-label">Goal</label>
-        <select v-model="profile.goal" class="pixel-input">
-          <option v-for="option in GOAL_OPTIONS" :key="option.value" :value="option.value">
-            {{ option.label }}
-          </option>
-        </select>
-      </div>
-
-      <div>
-        <label class="pixel-label" for="profile-height">Height (cm)</label>
-        <input
-          id="profile-height"
-          v-model.number="profile.height_cm"
-          class="pixel-input"
-          type="number"
-          min="51"
-          max="300"
-          step="0.5"
-          required
-        />
-      </div>
-
-      <div>
-        <label class="pixel-label" for="profile-weight">Weight (kg)</label>
-        <input
-          id="profile-weight"
-          v-model.number="profile.weight_kg"
-          class="pixel-input"
-          type="number"
-          min="11"
-          max="400"
-          step="0.5"
-          required
-        />
-      </div>
-
-      <div>
-        <label class="pixel-label">Experience</label>
-        <select v-model="profile.experience" class="pixel-input">
-          <option v-for="option in EXPERIENCE_OPTIONS" :key="option.value" :value="option.value">
-            {{ option.label }}
-          </option>
-        </select>
-      </div>
-
-      <div>
-        <label class="pixel-label">Session length</label>
-        <select v-model.number="profile.session_minutes" class="pixel-input">
-          <option v-for="minutes in SESSION_MINUTES_OPTIONS" :key="minutes" :value="minutes">
-            {{ minutes }} minutes
-          </option>
-        </select>
-      </div>
-
-      <div>
-        <label class="pixel-label" for="profile-timezone">Timezone</label>
-        <input
-          id="profile-timezone"
-          v-model.trim="profile.timezone"
-          class="pixel-input"
-          type="text"
-          placeholder="Asia/Jakarta"
-          required
-        />
-        <p class="mt-1 font-mono text-[10px] text-slate-500">
-          IANA name, e.g. Asia/Jakarta.
-        </p>
-      </div>
-
-      <div>
-        <label class="pixel-label">Locale</label>
-        <select v-model="profile.locale" class="pixel-input">
-          <option value="id-ID">id-ID</option>
-          <option value="en-US">en-US</option>
-        </select>
-      </div>
-
-      <div>
-        <label class="pixel-label">Unit preference</label>
-        <select v-model="profile.unit_system" class="pixel-input">
-          <option v-for="option in UNIT_SYSTEM_OPTIONS" :key="option.value" :value="option.value">
-            {{ option.label }}
-          </option>
-        </select>
-      </div>
+      <AppInput
+        v-model="weightModel"
+        label="Berat (kg)"
+        type="number"
+        min="11"
+        max="400"
+        step="0.5"
+        required
+        inputmode="decimal"
+      />
+      <AppSelect v-model="profile.experience" label="Level" :options="experienceOptions" />
+      <AppSelect v-model="sessionModel" label="Durasi sesi" :options="sessionOptions" />
+      <AppInput
+        v-model="profile.timezone"
+        label="Timezone"
+        placeholder="Asia/Jakarta"
+        hint="Nama IANA, contoh Asia/Jakarta."
+        required
+      />
+      <AppSelect v-model="profile.locale" label="Locale" :options="localeOptions" />
+      <AppSelect v-model="profile.unit_system" label="Unit" :options="unitOptions" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import AppInput from '../ui-v2/AppInput.vue'
+import AppSelect from '../ui-v2/AppSelect.vue'
+import type { UiOption } from '../ui-v2'
 import type { ProfileInput } from '../../types/profile'
 import {
   EXPERIENCE_OPTIONS,
@@ -126,10 +64,76 @@ import {
 const profile = defineModel<ProfileInput>('profile', { required: true })
 const displayName = defineModel<string>('displayName', { default: '' })
 
-defineProps({
-  showDisplayName: {
-    type: Boolean,
-    default: true,
+withDefaults(
+  defineProps<{
+    showDisplayName?: boolean
+  }>(),
+  {
+    showDisplayName: true,
+  },
+)
+
+const genderOptions: UiOption[] = GENDER_OPTIONS.map((option) => ({
+  value: option.value,
+  label: option.label,
+}))
+const goalOptions: UiOption[] = GOAL_OPTIONS.map((option) => ({
+  value: option.value,
+  label: option.label,
+  description: option.hint,
+}))
+const experienceOptions: UiOption[] = EXPERIENCE_OPTIONS.map((option) => ({
+  value: option.value,
+  label: option.label,
+}))
+const sessionOptions: UiOption[] = SESSION_MINUTES_OPTIONS.map((minutes) => ({
+  value: String(minutes),
+  label: `${minutes} menit`,
+}))
+const localeOptions: UiOption[] = [
+  { value: 'id-ID', label: 'id-ID' },
+  { value: 'en-US', label: 'en-US' },
+]
+const unitOptions: UiOption[] = UNIT_SYSTEM_OPTIONS.map((option) => ({
+  value: option.value,
+  label: option.label,
+}))
+
+const heightModel = computed({
+  get: () => String(profile.value.height_cm),
+  set: (value: string) => {
+    profile.value.height_cm = Number(value)
+  },
+})
+const weightModel = computed({
+  get: () => String(profile.value.weight_kg),
+  set: (value: string) => {
+    profile.value.weight_kg = Number(value)
+  },
+})
+const sessionModel = computed({
+  get: () => String(profile.value.session_minutes),
+  set: (value: string) => {
+    profile.value.session_minutes = Number(value) as ProfileInput['session_minutes']
   },
 })
 </script>
+
+<style scoped>
+.profile-fields {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.profile-fields__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+@media (max-width: 640px) {
+  .profile-fields__grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

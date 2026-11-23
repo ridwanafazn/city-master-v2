@@ -1,96 +1,155 @@
 <template>
-  <div class="min-h-screen bg-slate-50">
-    <header class="border-b-4 border-slate-900 bg-white">
-      <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        <RouterLink to="/" class="flex items-center gap-3">
-          <span class="bg-slate-900 text-green-400 font-black px-2 py-1 border-3 border-slate-900">JYMZ</span>
-          <span class="font-black uppercase tracking-tight hidden sm:block">Shared Plan</span>
-        </RouterLink>
-        <span class="font-mono text-[10px] uppercase text-slate-500">Read-only · no login</span>
+  <div class="ui-v2-scope shared-page">
+    <header class="shared-top">
+      <RouterLink to="/" class="shared-brand">
+        <span class="shared-brand__mark">JYMZ</span>
+        <span class="shared-brand__sub">Plan dibagikan</span>
+      </RouterLink>
+      <div class="shared-top__actions">
+        <Badge variant="neutral">Hanya baca</Badge>
+        <RouterLink to="/" class="text-link">Coba engine</RouterLink>
       </div>
     </header>
 
-    <main class="max-w-6xl mx-auto p-4 md:p-8 space-y-8">
-      <div v-if="loading" class="font-mono text-sm text-slate-500">Loading shared plan…</div>
-
-      <div
-        v-else-if="error"
-        class="border-3 border-red-700 bg-red-50 p-6 text-center"
-      >
-        <h1 class="font-black uppercase text-xl">Share link tidak tersedia</h1>
-        <p class="mt-2 font-mono text-sm text-red-800">{{ error }}</p>
-        <RouterLink to="/" class="pixel-button inline-flex mt-4 text-xs font-black uppercase">
-          Open Public Engine
-        </RouterLink>
+    <main class="shared-main">
+      <div v-if="loading" class="shared-loading" aria-busy="true">
+        <Skeleton width="42%" height="2.25rem" />
+        <Skeleton :lines="3" height="0.8rem" />
+        <Skeleton width="100%" height="220px" />
       </div>
 
+      <ErrorState
+        v-else-if="error"
+        title="Share link tidak tersedia"
+        :message="error"
+        retry-label="Kembali ke engine"
+        @retry="router.push('/')"
+      />
+
       <template v-else-if="plan">
-        <header class="border-b-4 border-slate-900 pb-4">
-          <div class="flex items-center gap-2 mb-2">
-            <span class="bg-blue-500 text-white border-2 border-slate-900 px-2 py-1 font-mono text-[10px] font-black uppercase">
-              Shared Plan
-            </span>
-            <span class="font-mono text-[10px] text-slate-500 uppercase">
-              Expires {{ formatDate(plan.expires_at) }}
-            </span>
+        <header class="plan-head">
+          <div class="plan-head__copy">
+            <Badge variant="outline">Plan dibagikan</Badge>
+            <h1>{{ plan.title }}</h1>
+            <p>
+              {{ splitLabel(plan.split_type) }} · {{ plan.days.length }} hari ·
+              kedaluwarsa {{ formatDate(plan.expires_at) }}
+            </p>
           </div>
-          <h1 class="text-4xl md:text-5xl font-black uppercase tracking-tighter">{{ plan.title }}</h1>
-          <p class="text-slate-600 mt-2 font-mono text-sm">
-            {{ splitLabel(plan.split_type) }} · {{ plan.days.length }} days · seed {{ plan.seed }}
-          </p>
+          <dl class="plan-meta">
+            <div>
+              <dt>Split</dt>
+              <dd>{{ splitLabel(plan.split_type) }}</dd>
+            </div>
+            <div>
+              <dt>Hari</dt>
+              <dd class="type-data">{{ plan.days.length }}</dd>
+            </div>
+            <div>
+              <dt>Kedaluwarsa</dt>
+              <dd class="type-data">{{ formatDate(plan.expires_at) }}</dd>
+            </div>
+          </dl>
         </header>
 
-        <div
-          v-if="plan.warnings.length"
-          class="border-3 border-yellow-700 bg-yellow-50 p-3 font-mono text-xs text-yellow-900"
-        >
-          <p class="font-black uppercase mb-1">Plan warnings</p>
-          <ul class="list-disc list-inside space-y-1">
+        <section v-if="plan.warnings.length" class="warnings" aria-labelledby="warnings-title">
+          <h2 id="warnings-title">Catatan plan</h2>
+          <ul>
             <li v-for="warning in plan.warnings" :key="warning">{{ warning }}</li>
           </ul>
-        </div>
+        </section>
 
-        <div class="flex flex-wrap gap-2">
-          <button
-            v-for="day in plan.days"
-            :key="day.day"
-            type="button"
-            class="border-3 border-slate-900 px-3 py-2 font-mono text-xs font-black uppercase"
-            :class="activeDayNumber === day.day ? 'bg-slate-900 text-white' : 'bg-white'"
-            @click="activeDayNumber = day.day"
-          >
-            Day {{ day.day }} · {{ day.day_focus }}
-          </button>
-        </div>
-
-        <PixelCard v-if="activeDay" :title="`${activeDay.day_focus} · ${activeDay.exercises.length} exercises`">
-          <div class="overflow-x-auto">
-            <table class="w-full text-left font-mono text-sm border-collapse">
-              <thead>
-                <tr class="bg-slate-900 text-white">
-                  <th class="p-3 border-3 border-slate-900">Exercise</th>
-                  <th class="p-3 border-3 border-slate-900">Target</th>
-                  <th class="p-3 border-3 border-slate-900">Equipment</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="exercise in activeDay.exercises" :key="exercise.id">
-                  <td class="p-3 border-3 border-slate-900 font-bold uppercase">{{ exercise.exercise_name }}</td>
-                  <td class="p-3 border-3 border-slate-900">{{ bodyPartLabel(exercise.body_part) }}</td>
-                  <td class="p-3 border-3 border-slate-900">
-                    <span v-for="item in exercise.equipment" :key="item" class="inline-block border-2 border-slate-900 px-2 py-0.5 mr-1 mb-1 text-[10px] uppercase">
-                      {{ item }}
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+        <section class="plan-body" aria-labelledby="days-title">
+          <div class="section-head">
+            <h2 id="days-title">Rencana mingguan</h2>
+            <span class="type-data">{{ plan.days.length }} hari</span>
           </div>
-        </PixelCard>
 
-        <p class="font-mono text-[10px] text-slate-500 text-center">
-          Shared by a JYMZ user · not medical advice · no owner identity included
-        </p>
+          <div class="day-tabs" role="tablist" aria-label="Pilih hari latihan">
+            <button
+              v-for="day in plan.days"
+              :id="`shared-day-tab-${day.day}`"
+              :key="day.day"
+              type="button"
+              role="tab"
+              class="day-tab"
+              :class="{ 'is-active': activeDayNumber === day.day }"
+              :aria-selected="activeDayNumber === day.day"
+              :aria-controls="`shared-day-panel-${day.day}`"
+              @click="activeDayNumber = day.day"
+            >
+              <span class="type-data">Hari {{ day.day }}</span>
+              <strong>{{ day.day_focus }}</strong>
+            </button>
+          </div>
+
+          <div
+            v-if="activeDay"
+            :id="`shared-day-panel-${activeDay.day}`"
+            class="day-panel"
+            role="tabpanel"
+            :aria-labelledby="`shared-day-tab-${activeDay.day}`"
+          >
+            <div class="section-head">
+              <h3>{{ activeDay.day_focus }}</h3>
+              <span class="type-data">{{ activeDay.exercises.length }} exercise</span>
+            </div>
+
+            <div class="exercise-table-wrap">
+              <table class="exercise-table">
+                <caption class="sr-only">
+                  Latihan untuk hari {{ activeDay.day }}, fokus
+                  {{ activeDay.day_focus }}
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Latihan</th>
+                    <th scope="col">Target</th>
+                    <th scope="col">Peralatan</th>
+                    <th scope="col" class="exercise-table__preview">Pratinjau</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="exercise in activeDay.exercises" :key="exercise.id">
+                    <th scope="row">{{ exercise.exercise_name }}</th>
+                    <td>
+                      <span class="target-tag">{{ bodyPartLabel(exercise.body_part) }}</span>
+                    </td>
+                    <td>
+                      <span class="equipment-list">
+                        {{ exercise.equipment.length ? exercise.equipment.map(equipmentLabel).join(', ') : '—' }}
+                      </span>
+                    </td>
+                    <td class="exercise-table__preview">
+                      <img
+                        v-if="exercise.exercise_image"
+                        :src="exercise.exercise_image"
+                        :alt="`Ilustrasi ${exercise.exercise_name}`"
+                        width="56"
+                        height="56"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                      <span v-else class="thumb-fallback" aria-hidden="true">
+                        {{ exercise.exercise_name.slice(0, 2).toUpperCase() }}
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <footer class="shared-foot">
+          <p>
+            Dibagikan oleh pengguna JYMZ tanpa identitas pemilik. Plan ini bukan
+            diagnosis medis.
+          </p>
+          <AppButton variant="secondary" size="sm" @click="router.push('/')">
+            Buat plan sendiri
+          </AppButton>
+        </footer>
       </template>
     </main>
   </div>
@@ -98,31 +157,432 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import AppButton from '../../components/ui-v2/AppButton.vue'
+import Badge from '../../components/ui-v2/Badge.vue'
+import ErrorState from '../../components/ui-v2/ErrorState.vue'
+import Skeleton from '../../components/ui-v2/Skeleton.vue'
 import { plansService } from '../../api/plansService'
-import PixelCard from '../../components/ui/PixelCard.vue'
-import { bodyPartLabel, formatDate, splitLabel } from '../../lib/planOptions'
+import { bodyPartLabel, splitLabel } from '../../lib/planOptions'
+import { equipmentLabel } from '../../lib/profileOptions'
+import { preloadUiFonts } from '../../lib/preloadFonts'
 import type { PublicPlan } from '../../types/plans'
 
 const route = useRoute()
+const router = useRouter()
 const plan = ref<PublicPlan | null>(null)
 const loading = ref(true)
 const error = ref<string | null>(null)
 const activeDayNumber = ref(1)
 
+preloadUiFonts()
+
 const activeDay = computed(() => {
   if (!plan.value) return null
-  return plan.value.days.find((day) => day.day === activeDayNumber.value) ?? plan.value.days[0] ?? null
+  return (
+    plan.value.days.find((day) => day.day === activeDayNumber.value) ??
+    plan.value.days[0] ??
+    null
+  )
 })
+
+function formatDate(value: string): string {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return '—'
+  return new Intl.DateTimeFormat('id-ID', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }).format(date)
+}
 
 onMounted(async () => {
   try {
     plan.value = await plansService.getShared(String(route.params.token))
     activeDayNumber.value = plan.value.days[0]?.day ?? 1
   } catch (err) {
-    error.value = err instanceof Error ? err.message : 'Share link tidak ditemukan atau sudah kedaluwarsa.'
+    error.value =
+      err instanceof Error
+        ? err.message
+        : 'Share link tidak ditemukan atau sudah kedaluwarsa.'
   } finally {
     loading.value = false
   }
 })
 </script>
+
+<style scoped>
+.shared-page {
+  min-height: 100vh;
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+.shared-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: 16px var(--gutter-mobile);
+  border-bottom: 1px solid var(--color-ink);
+}
+
+.shared-brand {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  min-height: var(--touch-target);
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+.shared-brand__mark {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.shared-brand__sub {
+  color: var(--color-muted);
+  font-family: var(--font-data);
+  font-size: 0.625rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.shared-top__actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--touch-target);
+  min-height: var(--touch-target);
+  color: var(--color-signal-strong);
+  font-size: 0.8125rem;
+  font-weight: 650;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.shared-main {
+  display: grid;
+  gap: 32px;
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: 40px var(--gutter-mobile) 64px;
+}
+
+.shared-loading {
+  display: grid;
+  gap: 18px;
+}
+
+.plan-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--color-ink);
+}
+
+.plan-head__copy h1 {
+  max-width: 24ch;
+  margin: 10px 0 0;
+  font-size: clamp(2.25rem, 4.6vw, 3.75rem);
+  letter-spacing: -0.035em;
+  line-height: 0.98;
+}
+
+.plan-head__copy p {
+  margin: 12px 0 0;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.plan-meta {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 22px;
+  margin: 0;
+}
+
+.plan-meta > div {
+  display: grid;
+  gap: 4px;
+}
+
+.plan-meta dt {
+  color: var(--color-muted);
+  font-family: var(--font-data);
+  font-size: 0.5625rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.plan-meta dd {
+  margin: 0;
+  font-size: 0.75rem;
+}
+
+.warnings {
+  padding: 14px 16px;
+  border: 1px solid #f2d9b2;
+  border-radius: var(--radius-card);
+  background: var(--color-warning-bg);
+}
+
+.warnings h2 {
+  margin: 0 0 6px;
+  font-size: 0.875rem;
+}
+
+.warnings ul {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding-left: 18px;
+  color: var(--color-ink);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.plan-body {
+  display: grid;
+  gap: 16px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-ink);
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.section-head h2,
+.section-head h3 {
+  margin: 0;
+  font-size: var(--text-h2);
+}
+
+.section-head h3 {
+  font-size: var(--text-h3);
+}
+
+.section-head .type-data {
+  color: var(--color-muted);
+  font-size: 0.6875rem;
+}
+
+.day-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.day-tab {
+  display: grid;
+  min-width: 128px;
+  min-height: 56px;
+  gap: 2px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-control);
+  background: var(--color-surface-raised);
+  color: var(--color-ink);
+  cursor: pointer;
+  font-family: var(--font-body);
+  text-align: left;
+  transition:
+    border-color var(--motion-fast) var(--ease-exit),
+    background-color var(--motion-fast) var(--ease-exit),
+    transform var(--motion-fast) var(--ease-exit);
+}
+
+.day-tab:hover {
+  border-color: #b9c0ae;
+  transform: translateY(-1px);
+}
+
+.day-tab .type-data {
+  color: var(--color-muted);
+  font-size: 0.5625rem;
+  text-transform: uppercase;
+}
+
+.day-tab strong {
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+
+.day-tab.is-active {
+  border-color: var(--color-ink);
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.day-tab.is-active .type-data {
+  color: #b9c0ae;
+}
+
+.day-panel {
+  display: grid;
+  gap: 12px;
+  animation: panel-enter var(--motion-base) var(--ease-entrance);
+}
+
+@keyframes panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.exercise-table-wrap {
+  overflow-x: auto;
+}
+
+.exercise-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.exercise-table th,
+.exercise-table td {
+  padding: 10px 12px 10px 0;
+  border-bottom: 1px solid var(--color-line);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.exercise-table thead th {
+  border-top: 1px solid var(--color-ink);
+  border-bottom: 1px solid var(--color-ink);
+  color: var(--color-muted);
+  font-family: var(--font-data);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.exercise-table tbody th {
+  font-weight: 600;
+}
+
+.target-tag {
+  display: inline-flex;
+  min-height: 26px;
+  align-items: center;
+  padding: 0 8px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  font-family: var(--font-data);
+  font-size: 0.625rem;
+  text-transform: uppercase;
+}
+
+.equipment-list {
+  color: var(--color-muted);
+  font-size: 0.8125rem;
+}
+
+.exercise-table__preview {
+  width: 64px;
+  text-align: right;
+}
+
+.exercise-table td.exercise-table__preview {
+  padding-right: 0;
+}
+
+.exercise-table img,
+.thumb-fallback {
+  display: inline-grid;
+  width: 56px;
+  height: 56px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  object-fit: cover;
+}
+
+.thumb-fallback {
+  place-items: center;
+  color: var(--color-muted);
+  font-family: var(--font-data);
+  font-size: 0.6875rem;
+}
+
+.shared-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-line);
+}
+
+.shared-foot p {
+  max-width: 58ch;
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  line-height: 1.55;
+}
+
+@media (min-width: 641px) {
+  .shared-top,
+  .shared-main {
+    padding-left: var(--gutter-desktop);
+    padding-right: var(--gutter-desktop);
+  }
+}
+
+@media (max-width: 900px) {
+  .plan-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 620px) {
+  .shared-brand__sub,
+  .shared-top__actions .ui-badge {
+    display: none;
+  }
+
+  .plan-meta {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .exercise-table thead th:nth-child(3),
+  .exercise-table tbody td:nth-child(3) {
+    display: none;
+  }
+
+  .exercise-table th,
+  .exercise-table td {
+    padding-right: 8px;
+  }
+}
+</style>

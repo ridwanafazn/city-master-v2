@@ -78,3 +78,26 @@
 .ui-v2-control[readonly] {
   background: var(--color-surface);
 }
+
+/* Route transition: fade + 8px, transform/opacity only. */
+.page-enter-active {
+  transition:
+    opacity var(--motion-base) var(--ease-entrance),
+    transform var(--motion-base) var(--ease-entrance);
+}
+
+.page-leave-active {
+  transition:
+    opacity var(--motion-fast) var(--ease-exit),
+    transform var(--motion-fast) var(--ease-exit);
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}

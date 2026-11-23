@@ -1,149 +1,657 @@
 <template>
-  <div class="max-w-6xl mx-auto p-4 md:p-8 min-h-screen">
-    
-    <header class="mb-8 flex flex-col md:flex-row md:justify-between md:items-end border-b-4 border-slate-900 pb-4">
-      <div>
-        <h1 class="text-4xl md:text-5xl font-black uppercase tracking-tighter">
-          Optimization <span class="text-blue-600">Dashboard</span>
-        </h1>
-      </div>
-      <div class="mt-4 md:mt-0 font-mono font-bold bg-slate-900 text-green-400 px-4 py-2 border-3 border-slate-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]" title="Waktu eksekusi algoritma di server">
-        API RESPONSE TIME: {{ store.processTime }}
+  <div class="ui-v2-scope public-page">
+    <header class="public-top">
+      <RouterLink to="/" class="public-brand">JYMZ</RouterLink>
+      <div class="public-top__actions">
+        <span class="type-data">Engine publik</span>
+        <RouterLink to="/auth/sign-in" class="text-link">Masuk</RouterLink>
       </div>
     </header>
 
-    <div v-if="result" class="space-y-8">
-      
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <PixelCard title="PHYSICAL PROFILE">
-          <div class="flex flex-col h-full justify-center items-center text-center py-4">
-            <div class="text-6xl font-black tracking-tighter">{{ result.bmi.toFixed(1) }}</div>
-            <div class="font-mono font-bold mt-4 px-3 py-1 border-3 border-slate-900 uppercase" :class="bmiColorClass(result.bmi_category)">
-              {{ result.bmi_category }}
-            </div>
+    <main v-if="result" class="dashboard-main">
+      <header class="dashboard-head">
+        <div class="dashboard-head__copy">
+          <h1>Hasil optimasi</h1>
+          <p>
+            Split dipilih rule engine dari {{ result.days.length }} hari yang
+            tersedia. Exercise dipilih optimizer dengan penalti untuk cedera.
+          </p>
+        </div>
+        <dl class="run-facts">
+          <div>
+            <dt>Waktu engine</dt>
+            <dd class="type-data">{{ store.processTime }} s</dd>
           </div>
-        </PixelCard>
-
-        <PixelCard title="ENGINE DECISION" class="md:col-span-2">
-          <div class="flex flex-col h-full justify-center">
-            <div class="text-sm font-mono text-slate-500 uppercase mb-1">Selected Split Strategy</div>
-            <div class="text-4xl font-black tracking-tight uppercase">{{ result.split_type.replace('+', ' + ') }}</div>
-            <div class="mt-4 p-3 bg-slate-100 border-l-4 border-slate-900 font-mono text-sm text-slate-700 leading-relaxed">
-              > Expert System (Experta) set rules based on {{ result.days.length }} available days.<br>
-              > Genetic Algorithm (PyGAD) converged to minimize injury penalties.
-            </div>
+          <div>
+            <dt>BMI</dt>
+            <dd class="type-data">{{ result.bmi.toFixed(1) }}</dd>
           </div>
-        </PixelCard>
-      </div>
+          <div>
+            <dt>Kategori</dt>
+            <dd><Badge :variant="bmiTone">{{ result.bmi_category }}</Badge></dd>
+          </div>
+        </dl>
+      </header>
 
-      <PixelCard title="WEEKLY BLUEPRINT (CLICK TO VIEW SCHEDULE)">
-        <div class="flex flex-wrap gap-4">
-          <button 
-            v-for="day in result.days" :key="'tab-'+day.day"
+      <section class="decision" aria-labelledby="decision-title">
+        <div class="decision__lead">
+          <h2 id="decision-title">Split terpilih</h2>
+          <p class="decision__value">{{ splitLabel(result.split_type) }}</p>
+          <p class="decision__copy">
+            {{ result.days.length }} hari latihan. Setiap hari berisi
+            {{ averageExerciseCount }} exercise secara rata-rata.
+          </p>
+        </div>
+        <ol class="decision__days">
+          <li v-for="day in result.days" :key="`summary-${day.day}`">
+            <span class="type-data">Hari {{ day.day }}</span>
+            <strong>{{ day.day_focus }}</strong>
+            <span class="type-data">{{ day.exercises.length }} exercise</span>
+          </li>
+        </ol>
+      </section>
+
+      <section class="blueprint" aria-labelledby="blueprint-title">
+        <div class="section-head">
+          <h2 id="blueprint-title">Rencana mingguan</h2>
+          <span class="type-data">{{ result.days.length }} hari</span>
+        </div>
+
+        <div class="day-tabs" role="tablist" aria-label="Pilih hari latihan">
+          <button
+            v-for="day in result.days"
+            :id="`day-tab-${day.day}`"
+            :key="day.day"
+            type="button"
+            role="tab"
+            class="day-tab"
+            :class="{ 'is-active': activeDayIndex === day.day }"
+            :aria-selected="activeDayIndex === day.day"
+            :aria-controls="`day-panel-${day.day}`"
             @click="activeDayIndex = day.day"
-            class="border-3 border-slate-900 p-3 flex flex-col items-start transition-all"
-            :class="activeDayIndex === day.day ? 'bg-slate-900 text-white shadow-none translate-x-[2px] translate-y-[2px]' : 'bg-white text-slate-900 hover:bg-slate-100 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]'"
           >
-            <span class="font-mono text-xs font-bold uppercase" :class="activeDayIndex === day.day ? 'text-slate-300' : 'text-slate-500'">
-              DAY {{ day.day }}
-            </span>
-            <span class="font-black uppercase text-lg leading-tight mt-1">
-              {{ day.day_focus }}
-            </span>
+            <span class="type-data">Hari {{ day.day }}</span>
+            <strong>{{ day.day_focus }}</strong>
           </button>
         </div>
-      </PixelCard>
 
-      <div class="space-y-4 pt-4" v-if="activeDayData">
-        <h2 class="text-2xl font-black uppercase border-l-8 border-slate-900 pl-3">
-          Daily Operations : Day {{ activeDayData?.day }}
-        </h2>
-        
-        <PixelCard>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left font-mono text-sm border-collapse">
+        <div
+          v-if="activeDayData"
+          :id="`day-panel-${activeDayData.day}`"
+          class="day-panel"
+          role="tabpanel"
+          :aria-labelledby="`day-tab-${activeDayData.day}`"
+        >
+          <div class="section-head">
+            <h3>{{ activeDayData.day_focus }}</h3>
+            <span class="type-data">{{ activeDayData.exercises.length }} exercise</span>
+          </div>
+
+          <div class="exercise-table-wrap">
+            <table class="exercise-table">
+              <caption class="sr-only">
+                Latihan untuk hari {{ activeDayData.day }}, fokus
+                {{ activeDayData.day_focus }}
+              </caption>
               <thead>
-                <tr class="bg-slate-900 text-white">
-                  <th class="p-3 border-3 border-slate-900">EXERCISE</th>
-                  <th class="p-3 border-3 border-slate-900">TARGET</th>
-                  <th class="p-3 border-3 border-slate-900">EQUIPMENT</th>
-                  <th class="p-3 border-3 border-slate-900 w-24">PREVIEW</th>
+                <tr>
+                  <th scope="col">Latihan</th>
+                  <th scope="col">Target</th>
+                  <th scope="col">Peralatan</th>
+                  <th scope="col" class="exercise-table__preview">Pratinjau</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(ex, idx) in activeDayData?.exercises" :key="idx" class="hover:bg-blue-50 transition-colors">
-                  <td class="p-3 border-3 border-slate-900 font-bold text-base">{{ ex.exercise_name.toUpperCase() }}</td>
-                  <td class="p-3 border-3 border-slate-900"><span class="bg-slate-200 px-2 py-1 text-xs border-2 border-slate-900">{{ ex.body_part.toUpperCase() }}</span></td>
-                  <td class="p-3 border-3 border-slate-900">
-                    <div class="flex flex-wrap gap-2">
-                      <span v-for="eq in ex.equipment" :key="eq" class="border-2 border-slate-900 bg-white px-2 py-1 text-xs">{{ eq.toUpperCase() }}</span>
-                    </div>
+                <tr v-for="exercise in activeDayData.exercises" :key="exercise.exercise_id">
+                  <th scope="row">{{ exercise.exercise_name }}</th>
+                  <td>
+                    <span class="target-tag">{{ bodyPartLabel(exercise.body_part) }}</span>
                   </td>
-                  <td class="p-3 border-3 border-slate-900 text-center">
-                    <img v-if="ex.exercise_image" :src="ex.exercise_image" class="w-16 h-16 object-cover border-2 border-slate-900 bg-white inline-block" loading="lazy">
+                  <td>
+                    <span class="equipment-list">
+                      {{ exercise.equipment.length ? exercise.equipment.map(equipmentLabel).join(', ') : '—' }}
+                    </span>
+                  </td>
+                  <td class="exercise-table__preview">
+                    <img
+                      v-if="exercise.exercise_image"
+                      :src="exercise.exercise_image"
+                      :alt="`Ilustrasi ${exercise.exercise_name}`"
+                      width="56"
+                      height="56"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <span v-else class="thumb-fallback" aria-hidden="true">
+                      {{ exercise.exercise_name.slice(0, 2).toUpperCase() }}
+                    </span>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
-        </PixelCard>
+        </div>
+
+        <p class="blueprint-note">
+          Gambar exercise dimuat dari katalog latihan. Jika gagal dimuat, tabel
+          tetap menampilkan nama, target, dan equipment.
+        </p>
+      </section>
+
+      <div class="dashboard-actions">
+        <AppButton variant="secondary" @click="recalibrate">Ubah parameter</AppButton>
+        <AppButton @click="restart">
+          Jalankan ulang
+          <RotateCcw :size="16" aria-hidden="true" />
+        </AppButton>
       </div>
 
-      <div class="pt-8 flex justify-center pb-12">
-        <PixelButton @click="recalibrate" class="px-8 py-3 text-lg">< RECALIBRATE ENGINE</PixelButton>
-      </div>
+      <p class="disclaimer">
+        Hasil ini bukan diagnosis medis. Hentikan exercise yang menimbulkan nyeri
+        dan konsultasikan ke tenaga medis bila perlu.
+      </p>
+    </main>
 
-    </div>
+    <main v-else class="dashboard-empty">
+      <h1>Belum ada hasil</h1>
+      <p>Jalankan optimasi dari halaman parameter untuk melihat weekly blueprint.</p>
+      <AppButton @click="recalibrate">Buka parameter</AppButton>
+    </main>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { RotateCcw } from '@lucide/vue'
+import AppButton from '../components/ui-v2/AppButton.vue'
+import Badge from '../components/ui-v2/Badge.vue'
+import { bodyPartLabel, splitLabel } from '../lib/planOptions'
+import { equipmentLabel } from '../lib/profileOptions'
+import { preloadUiFonts } from '../lib/preloadFonts'
 import { useFitnessStore } from '../stores/fitnessStore'
-import PixelCard from '../components/ui/PixelCard.vue'
-import PixelButton from '../components/ui/PixelButton.vue'
 
 const router = useRouter()
 const store = useFitnessStore()
 const result = computed(() => store.recommendationResult)
-
-// State untuk menyimpan ID hari mana yang sedang diklik/dilihat
 const activeDayIndex = ref(1)
 
-// Computed untuk mengambil data exercises hanya pada hari yang aktif
+preloadUiFonts()
+
 const activeDayData = computed(() => {
   if (!result.value) return null
-  return result.value.days.find(d => d.day === activeDayIndex.value)
+  return result.value.days.find((day) => day.day === activeDayIndex.value) ?? null
 })
 
-// Jika result baru masuk, otomatis reset view ke Day 1
-watch(result, (newVal) => {
-  const firstDay = newVal?.days[0]
-  if (firstDay) {
-    activeDayIndex.value = firstDay.day
+const averageExerciseCount = computed(() => {
+  if (!result.value?.days.length) return 0
+  const total = result.value.days.reduce((sum, day) => sum + day.exercises.length, 0)
+  return Math.round(total / result.value.days.length)
+})
+
+const bmiTone = computed(() => {
+  const category = (result.value?.bmi_category ?? '').toLowerCase()
+  if (category.includes('normal')) return 'success' as const
+  if (category.includes('underweight') || category.includes('overweight')) {
+    return 'warning' as const
   }
+  return 'danger' as const
 })
 
-const bmiColorClass = (category: string) => {
-  const cat = category.toLowerCase()
-  if (cat.includes('underweight')) return 'bg-yellow-300 text-yellow-900'
-  if (cat.includes('normal')) return 'bg-green-400 text-green-900'
-  if (cat.includes('overweight')) return 'bg-orange-400 text-orange-900'
-  return 'bg-red-500 text-white'
+watch(result, (next) => {
+  const firstDay = next?.days[0]
+  if (firstDay) activeDayIndex.value = firstDay.day
+})
+
+function recalibrate() {
+  void router.push('/')
 }
 
-const recalibrate = () => router.push('/')
+function restart() {
+  void router.push('/')
+}
 
 onMounted(() => {
-  if (!result.value) router.push('/')
-  else {
-    const firstDay = result.value.days[0]
-    if (firstDay) activeDayIndex.value = firstDay.day
-  }
+  if (!result.value) return
+  const firstDay = result.value.days[0]
+  if (firstDay) activeDayIndex.value = firstDay.day
 })
 </script>
 
 <style scoped>
-table { border: 3px solid #0f172a; }
+.public-page {
+  min-height: 100vh;
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+.public-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: 20px var(--gutter-mobile);
+  border-bottom: 1px solid var(--color-ink);
+}
+
+.public-brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-target);
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  text-decoration: none;
+}
+
+.public-top__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.public-top__actions .type-data {
+  color: var(--color-muted);
+  font-size: 0.625rem;
+  text-transform: uppercase;
+}
+
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--touch-target);
+  min-height: var(--touch-target);
+  color: var(--color-signal-strong);
+  font-size: 0.8125rem;
+  font-weight: 650;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.dashboard-main {
+  display: grid;
+  gap: 40px;
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: 40px var(--gutter-mobile) 64px;
+}
+
+.dashboard-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--color-ink);
+}
+
+.dashboard-head h1 {
+  margin: 0;
+  font-size: clamp(2.25rem, 4.6vw, 3.75rem);
+  letter-spacing: -0.035em;
+  line-height: 0.98;
+}
+
+.dashboard-head p {
+  max-width: 58ch;
+  margin: 14px 0 0;
+  color: var(--color-muted);
+  font-size: var(--text-body);
+  line-height: var(--leading-relaxed);
+}
+
+.run-facts {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin: 0;
+}
+
+.run-facts > div {
+  display: grid;
+  gap: 4px;
+}
+
+.run-facts dt {
+  color: var(--color-muted);
+  font-family: var(--font-data);
+  font-size: 0.5625rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.run-facts dd {
+  margin: 0;
+  font-size: 0.8125rem;
+}
+
+.decision {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 40px;
+  align-items: start;
+}
+
+.decision__lead h2 {
+  margin: 0;
+  color: var(--color-muted);
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.decision__value {
+  margin: 8px 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4.4vw, 3.5rem);
+  font-weight: 750;
+  letter-spacing: -0.035em;
+  line-height: 1;
+}
+
+.decision__copy {
+  max-width: 46ch;
+  margin: 12px 0 0;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.decision__days {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-ink);
+  list-style: none;
+}
+
+.decision__days li {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: baseline;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.decision__days .type-data {
+  color: var(--color-muted);
+  font-size: 0.625rem;
+  text-transform: uppercase;
+}
+
+.decision__days strong {
+  font-size: 0.9375rem;
+}
+
+.blueprint {
+  display: grid;
+  gap: 16px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-ink);
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.section-head h2,
+.section-head h3 {
+  margin: 0;
+  font-size: var(--text-h2);
+}
+
+.section-head h3 {
+  font-size: var(--text-h3);
+}
+
+.section-head .type-data {
+  color: var(--color-muted);
+  font-size: 0.6875rem;
+}
+
+.day-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.day-tab {
+  display: grid;
+  min-width: 128px;
+  min-height: 56px;
+  gap: 2px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-control);
+  background: var(--color-surface-raised);
+  color: var(--color-ink);
+  cursor: pointer;
+  font-family: var(--font-body);
+  text-align: left;
+  transition:
+    border-color var(--motion-fast) var(--ease-exit),
+    background-color var(--motion-fast) var(--ease-exit),
+    transform var(--motion-fast) var(--ease-exit);
+}
+
+.day-tab:hover {
+  border-color: #b9c0ae;
+  transform: translateY(-1px);
+}
+
+.day-tab .type-data {
+  color: var(--color-muted);
+  font-size: 0.5625rem;
+  text-transform: uppercase;
+}
+
+.day-tab strong {
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+
+.day-tab.is-active {
+  border-color: var(--color-ink);
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.day-tab.is-active .type-data {
+  color: #b9c0ae;
+}
+
+.day-panel {
+  display: grid;
+  gap: 12px;
+  animation: panel-enter var(--motion-base) var(--ease-entrance);
+}
+
+@keyframes panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.exercise-table-wrap {
+  overflow-x: auto;
+}
+
+.exercise-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.exercise-table th,
+.exercise-table td {
+  padding: 10px 12px 10px 0;
+  border-bottom: 1px solid var(--color-line);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.exercise-table thead th {
+  border-top: 1px solid var(--color-ink);
+  border-bottom: 1px solid var(--color-ink);
+  color: var(--color-muted);
+  font-family: var(--font-data);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.exercise-table tbody th {
+  font-weight: 600;
+}
+
+.target-tag {
+  display: inline-flex;
+  min-height: 26px;
+  align-items: center;
+  padding: 0 8px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  font-family: var(--font-data);
+  font-size: 0.625rem;
+  text-transform: uppercase;
+}
+
+.equipment-list {
+  color: var(--color-muted);
+  font-size: 0.8125rem;
+}
+
+.exercise-table__preview {
+  width: 64px;
+  text-align: right;
+}
+
+.exercise-table td.exercise-table__preview {
+  padding-right: 0;
+}
+
+.exercise-table img,
+.thumb-fallback {
+  display: inline-grid;
+  width: 56px;
+  height: 56px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  object-fit: cover;
+}
+
+.thumb-fallback {
+  place-items: center;
+  color: var(--color-muted);
+  font-family: var(--font-data);
+  font-size: 0.6875rem;
+}
+
+.blueprint-note {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.dashboard-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-ink);
+}
+
+.disclaimer {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  line-height: 1.55;
+}
+
+.dashboard-empty {
+  display: grid;
+  justify-items: start;
+  gap: 14px;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 72px var(--gutter-mobile);
+}
+
+.dashboard-empty h1 {
+  margin: 0;
+  font-size: var(--text-h1);
+}
+
+.dashboard-empty p {
+  margin: 0;
+  color: var(--color-muted);
+  line-height: var(--leading-relaxed);
+}
+
+@media (min-width: 641px) {
+  .public-top,
+  .dashboard-main {
+    padding-left: var(--gutter-desktop);
+    padding-right: var(--gutter-desktop);
+  }
+}
+
+@media (max-width: 900px) {
+  .dashboard-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .decision {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+@media (max-width: 620px) {
+  .dashboard-main {
+    gap: 32px;
+  }
+
+  .decision__days li {
+    grid-template-columns: 62px minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+
+  .exercise-table thead th:nth-child(3),
+  .exercise-table tbody td:nth-child(3) {
+    display: none;
+  }
+
+  .exercise-table th,
+  .exercise-table td {
+    padding-right: 8px;
+  }
+
+  .dashboard-actions :deep(.ui-btn) {
+    flex: 1 1 auto;
+  }
+}
 </style>

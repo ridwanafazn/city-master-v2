@@ -1,7 +1,10 @@
-import { defineStore } from 'pinia'
+import { defineStore, type Pinia } from 'pinia'
 import { ApiError } from '../api/client'
 import { meService } from '../api/meService'
 import { authClient, getAuthToken, isAuthConfigured } from '../lib/auth'
+import { clearMeCache, readMeCache, writeMeCache } from '../lib/authCache'
+import { registerAuthStore } from '../lib/authBridge'
+import { clearHomeCache } from '../lib/homeCache'
 import type { AccountDeletionResponse, MeResponse } from '../types/auth'
 
 export interface AuthUser {
@@ -23,7 +26,8 @@ interface AuthState {
   error: string | null
 }
 
-let initializePromise: Promise<void> | null = null
+let sessionPromise: Promise<boolean> | null = null
+let mePromise: Promise<boolean> | null = null
 let tokenPromise: Promise<string | null> | null = null
 
 function tokenIsFresh(token: string | null): boolean {
@@ -65,7 +69,7 @@ function mapAuthError(error: unknown, fallback: string): string {
   return message || fallback
 }
 
-export const useAuthStore = defineStore('auth', {
+const useAuthStoreInternal = defineStore('auth', {
   state: (): AuthState => ({
     user: null,
     token: null,
@@ -90,69 +94,97 @@ export const useAuthStore = defineStore('auth', {
   },
 
   actions: {
-    async initialize() {
-      if (this.initialized) return
-      if (initializePromise) return initializePromise
-      initializePromise = (async () => {
+    async ensureSession(force = false): Promise<boolean> {
+      if (this.initialized && !force) return this.isAuthenticated
+      if (sessionPromise) return sessionPromise
+      const promise = (async () => {
         this.status = 'loading'
+        this.error = null
         try {
-          await this.refreshSession()
+          const { data, error } = await authClient.getSession()
+          if (error || !data?.user) {
+            this.clearSession()
+            return false
+          }
+          const user = data.user as {
+            id: string
+            email?: string | null
+            name?: string | null
+            emailVerified?: boolean
+          }
+          this.user = {
+            id: user.id,
+            email: user.email ?? null,
+            name: user.name ?? null,
+            emailVerified: user.emailVerified,
+          }
+          const token = await this.getToken(true)
+          if (!token) {
+            this.clearSession()
+            return false
+          }
+          const cached = readMeCache(user.id)
+          if (cached) {
+            this.me = cached
+          } else if (this.me?.user.id !== user.id) {
+            this.me = null
+          }
+          this.status = 'authenticated'
+          return true
+        } catch (error) {
+          this.error = mapAuthError(error, 'Gagal memuat sesi.')
+          this.clearSession()
+          return false
         } finally {
           this.initialized = true
-          initializePromise = null
+          sessionPromise = null
         }
       })()
-      await initializePromise
+      sessionPromise = promise
+      return promise
+    },
+
+    async initialize(): Promise<void> {
+      const ok = await this.ensureSession()
+      if (ok && !this.me) await this.loadMe()
     },
 
     async refreshSession(): Promise<boolean> {
-      this.error = null
-      try {
-        const { data, error } = await authClient.getSession()
-        if (error || !data?.user) {
-          this.clearSession()
-          return false
-        }
-        const user = data.user as {
-          id: string
-          email?: string | null
-          name?: string | null
-          emailVerified?: boolean
-        }
-        this.user = {
-          id: user.id,
-          email: user.email ?? null,
-          name: user.name ?? null,
-          emailVerified: user.emailVerified,
-        }
-        const token = await this.getToken(true)
-        if (!token) {
-          this.clearSession()
-          return false
-        }
-        await this.loadMe()
-        this.status = 'authenticated'
-        return true
-      } catch (error) {
-        this.error = mapAuthError(error, 'Gagal memuat sesi.')
-        this.clearSession()
-        return false
-      }
+      const ok = await this.ensureSession(true)
+      if (!ok) return false
+      if (!this.me) await this.loadMe()
+      this.status = 'authenticated'
+      return true
     },
 
     async loadMe(): Promise<boolean> {
-      try {
-        this.me = await meService.getMe()
-        return true
-      } catch (error) {
-        const apiError = error instanceof ApiError ? error : null
-        if (apiError?.status === 401) {
-          this.clearSession()
+      if (mePromise) return mePromise
+      const promise = (async () => {
+        try {
+          const me = await meService.getMe()
+          this.me = me
+          writeMeCache(me)
+          return true
+        } catch (error) {
+          const apiError = error instanceof ApiError ? error : null
+          if (apiError?.status === 401) {
+            this.clearSession()
+            return false
+          }
+          const cached = readMeCache(this.user?.id)
+          if (cached) {
+            this.me = cached
+            this.error = null
+            return true
+          }
+          this.error = apiError?.message ?? 'Gagal memuat data akun.'
           return false
+        } finally {
+          mePromise = null
         }
-        this.error = apiError?.message ?? 'Gagal memuat data akun.'
-        return false
-      }
+      })()
+      mePromise = promise
+      return promise
     },
 
     async getToken(force = false): Promise<string | null> {
@@ -253,6 +285,14 @@ export const useAuthStore = defineStore('auth', {
       this.token = null
       this.me = null
       this.status = 'anonymous'
+      clearMeCache()
+      clearHomeCache()
     },
   },
 })
+
+export function useAuthStore(pinia?: Pinia) {
+  const store = useAuthStoreInternal(pinia)
+  registerAuthStore(store)
+  return store
+}

@@ -1,36 +1,35 @@
 <template>
-  <div class="space-y-3">
-    <div class="flex flex-wrap gap-2">
-      <button
+  <div class="equipment-picker">
+    <div class="chip-grid" role="group" aria-label="Equipment tersedia">
+      <Chip
         v-for="item in EQUIPMENT_OPTIONS"
         :key="item"
-        type="button"
-        class="border-2 border-slate-900 px-2.5 py-1.5 font-mono text-[11px] font-bold uppercase transition-all"
-        :class="
-          selected.includes(item)
-            ? 'bg-slate-900 text-white shadow-none translate-x-[1px] translate-y-[1px]'
-            : 'bg-white text-slate-700 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-slate-100'
-        "
-        @click="toggle(item)"
+        :selected="selected.includes(item)"
+        :disabled="Boolean(max) && !selected.includes(item) && selected.length >= max"
+        @toggle="toggle(item)"
       >
         {{ equipmentLabel(item) }}
-      </button>
+      </Chip>
     </div>
-    <p class="font-mono text-[10px] text-slate-500">
-      {{ selected.length }}<span v-if="max"> / {{ max }}</span> selected. Kosong berarti semua equipment dianggap tersedia.
+    <p class="picker-hint">
+      {{ selected.length }}<span v-if="max"> / {{ max }}</span> dipilih.
+      Kosong berarti semua equipment dianggap tersedia.
     </p>
   </div>
 </template>
 
 <script setup lang="ts">
+import Chip from '../ui-v2/Chip.vue'
 import { EQUIPMENT_OPTIONS, equipmentLabel } from '../../lib/profileOptions'
 
-const props = defineProps({
-  max: {
-    type: Number,
-    default: 0,
+const props = withDefaults(
+  defineProps<{
+    max?: number
+  }>(),
+  {
+    max: 0,
   },
-})
+)
 
 const selected = defineModel<string[]>({ required: true })
 
@@ -44,3 +43,23 @@ function toggle(value: string) {
   selected.value.push(value)
 }
 </script>
+
+<style scoped>
+.equipment-picker {
+  display: grid;
+  gap: 10px;
+}
+
+.chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.picker-hint {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+</style>

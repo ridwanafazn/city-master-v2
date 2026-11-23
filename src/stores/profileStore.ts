@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ApiError } from '../api/client'
 import { meService } from '../api/meService'
+import { writeMeCache } from '../lib/authCache'
 import { useAuthStore } from './authStore'
 import type {
   ConsentKind,
@@ -91,6 +92,7 @@ export const useProfileStore = defineStore('profile', {
         const auth = useAuthStore()
         auth.me = me
         auth.status = 'authenticated'
+        writeMeCache(me)
         await this.load(true)
         return true
       } catch (error) {

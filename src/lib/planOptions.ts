@@ -25,7 +25,7 @@ export function bodyPartLabel(value: string): string {
 }
 
 export function splitLabel(value: string): string {
-  return value.replace('+', ' + ').replaceAll('_', ' ').toUpperCase()
+  return value.replaceAll('+', ' + ').replaceAll('_', ' ').toUpperCase()
 }
 
 export function formatDate(value: string): string {

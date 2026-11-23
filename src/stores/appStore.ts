@@ -34,6 +34,24 @@ export const useAppStore = defineStore('app', {
   },
 
   actions: {
+    async probeReadiness(force = false) {
+      if (!force && this.backendStatus === 'checking') return
+      this.backendStatus = 'checking'
+      this.error = null
+      this.errorCode = null
+      try {
+        this.ready = await healthService.getReady()
+        this.backendStatus = this.ready.degraded ? 'degraded' : 'online'
+      } catch (error) {
+        const apiError = toApiError(error)
+        this.error = apiError.message
+        this.errorCode = apiError.code
+        this.backendStatus = 'offline'
+      } finally {
+        this.lastCheckedAt = new Date().toISOString()
+      }
+    },
+
     async checkBackend() {
       this.backendStatus = 'checking'
       this.error = null

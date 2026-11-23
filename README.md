@@ -77,6 +77,16 @@ UI/UX v2 baseline:
 [`docs/ui-ux-v2-baseline.md`](docs/ui-ux-v2-baseline.md).  
 UI/UX v2 phase 1 (tokens, fonts, primitives):
 [`docs/ui-ux-v2-phase-1.md`](docs/ui-ux-v2-phase-1.md).  
+UI/UX v2 phase 2 (shell, Today, auth):
+[`docs/ui-ux-v2-phase-2.md`](docs/ui-ux-v2-phase-2.md).  
+UI/UX v2 phase 3 (plans, workout):
+[`docs/ui-ux-v2-phase-3.md`](docs/ui-ux-v2-phase-3.md).  
+UI/UX v2 phase 4 (progress, profile, onboarding):
+[`docs/ui-ux-v2-phase-4.md`](docs/ui-ux-v2-phase-4.md).  
+UI/UX v2 phase 5 (public flow, motion):
+[`docs/ui-ux-v2-phase-5.md`](docs/ui-ux-v2-phase-5.md).  
+UI/UX v2 phase 6 (performance, QA):
+[`docs/ui-ux-v2-phase-6.md`](docs/ui-ux-v2-phase-6.md).  
 Binding design agreement:
 [`DESIGN.md`](DESIGN.md).  
 Style guide lokal: `http://localhost:5173/style-guide` (route publik, tidak

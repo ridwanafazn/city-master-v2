@@ -8,7 +8,7 @@ dan [`DESIGN.md`](../DESIGN.md)
 
 Fase 1 membangun fondasi visual: token, font, primitif, dan satu specimen
 hidup. Halaman produksi belum dimigrasi; fase 2 mulai dari AppShell dan
-Home/Today. Tidak ada deploy atau commit pada fase ini.
+Home/Today. Commit fase 1: `7e6c0de`. Tidak ada deploy pada fase ini.
 
 ---
 
@@ -239,4 +239,4 @@ npm run build       → lolos
 5. Fase 2 harus mengikuti `DESIGN.md`, termasuk larangan kicker, section
    numbers, left bars, dan kartu seragam.
 
-Belum ada commit dan belum ada deploy.
+Sudah di-commit sebagai `7e6c0de`. Belum ada deploy.

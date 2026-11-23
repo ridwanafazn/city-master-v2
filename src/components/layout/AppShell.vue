@@ -1,206 +1,402 @@
 <template>
-  <div class="min-h-screen flex flex-col bg-slate-50">
-    <header class="border-b-4 border-slate-900 bg-white sticky top-0 z-20">
-      <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-        <RouterLink to="/app" class="flex items-center gap-3 shrink-0">
-          <span class="bg-slate-900 text-green-400 font-black px-2 py-1 border-3 border-slate-900">
-            JYMZ
-          </span>
-          <span class="hidden sm:block font-black uppercase tracking-tight">
-            App Console
-          </span>
+  <div class="ui-v2-scope app-shell">
+    <div class="app-layout">
+      <aside class="app-sidebar">
+        <RouterLink to="/app" class="app-brand">
+          <span class="app-brand__mark">JYMZ</span>
+          <span class="app-brand__sub">field log</span>
         </RouterLink>
 
-        <nav class="hidden lg:flex items-center gap-1 font-mono text-xs font-bold uppercase">
+        <nav class="app-nav" aria-label="Navigasi utama">
           <RouterLink
-            to="/app"
-            class="px-3 py-2 border-2 border-transparent hover:border-slate-900"
-            exact-active-class="bg-slate-900 text-white border-slate-900"
+            v-for="item in navItems"
+            :key="item.to"
+            :to="item.to"
+            class="app-nav__item"
+            :class="{ 'is-active': isActive(item) }"
+            :aria-current="isActive(item) ? 'page' : undefined"
+            @mouseenter="prefetchRoute(item.to)"
+            @focus="prefetchRoute(item.to)"
+            @touchstart.passive="prefetchRoute(item.to)"
           >
-            Control Room
-          </RouterLink>
-          <RouterLink
-            to="/app/profile"
-            class="px-3 py-2 border-2 border-transparent hover:border-slate-900"
-            active-class="bg-slate-900 text-white border-slate-900"
-          >
-            Profile
-          </RouterLink>
-          <RouterLink
-            to="/app/plans"
-            class="px-3 py-2 border-2 border-transparent hover:border-slate-900"
-            active-class="bg-slate-900 text-white border-slate-900"
-          >
-            Plans
-          </RouterLink>
-          <RouterLink
-            to="/app/workouts"
-            class="px-3 py-2 border-2 border-transparent hover:border-slate-900"
-            active-class="bg-slate-900 text-white border-slate-900"
-          >
-            Workouts
-          </RouterLink>
-          <RouterLink
-            to="/app/progress"
-            class="px-3 py-2 border-2 border-transparent hover:border-slate-900"
-            active-class="bg-slate-900 text-white border-slate-900"
-          >
-            Progress
-          </RouterLink>
-          <RouterLink
-            to="/app/account"
-            class="px-3 py-2 border-2 border-transparent hover:border-slate-900"
-            active-class="bg-slate-900 text-white border-slate-900"
-          >
-            Account
+            <component :is="item.icon" :size="18" :stroke-width="1.8" aria-hidden="true" />
+            <span>{{ item.label }}</span>
           </RouterLink>
         </nav>
 
-        <div class="flex items-center gap-2">
-          <RouterLink
-            to="/app/account"
-            class="hidden md:inline-flex flex-col items-end border-2 border-slate-900 px-2 py-1 hover:bg-slate-100"
-          >
-            <span class="font-mono text-[10px] font-black uppercase leading-tight">
-              {{ auth.displayName }}
-            </span>
-            <span class="font-mono text-[9px] text-slate-500 leading-tight">
-              {{ auth.email }}
-            </span>
-          </RouterLink>
-          <span
-            class="hidden sm:inline-flex items-center gap-2 border-2 border-slate-900 px-2 py-1 font-mono text-[10px] font-black uppercase"
-            :class="statusClass"
-            :title="appStore.error || 'Backend status'"
-          >
-            <span class="w-2 h-2 border border-slate-900" :class="statusDotClass"></span>
-            {{ statusLabel }}
-          </span>
-          <RouterLink
-            to="/"
-            class="pixel-button text-[10px] font-black uppercase"
-          >
-            Public Engine
-          </RouterLink>
-        </div>
-      </div>
-
-      <nav class="lg:hidden flex gap-2 overflow-x-auto px-4 pb-3 font-mono text-[10px] font-bold uppercase">
-        <RouterLink
-          to="/app"
-          class="px-3 py-1 border-2 border-slate-900 bg-white shrink-0"
-          exact-active-class="bg-slate-900 text-white"
-        >
-          Control Room
-        </RouterLink>
-        <RouterLink
-          to="/app/profile"
-          class="px-3 py-1 border-2 border-slate-900 bg-white shrink-0"
-          active-class="bg-slate-900 text-white"
-        >
-          Profile
-        </RouterLink>
-        <RouterLink
-          to="/app/plans"
-          class="px-3 py-1 border-2 border-slate-900 bg-white shrink-0"
-          active-class="bg-slate-900 text-white"
-        >
-          Plans
-        </RouterLink>
-        <RouterLink
-          to="/app/workouts"
-          class="px-3 py-1 border-2 border-slate-900 bg-white shrink-0"
-          active-class="bg-slate-900 text-white"
-        >
-          Workouts
-        </RouterLink>
-        <RouterLink
-          to="/app/progress"
-          class="px-3 py-1 border-2 border-slate-900 bg-white shrink-0"
-          active-class="bg-slate-900 text-white"
-        >
-          Progress
-        </RouterLink>
         <RouterLink
           to="/app/account"
-          class="px-3 py-1 border-2 border-slate-900 bg-white shrink-0"
-          active-class="bg-slate-900 text-white"
+          class="app-account"
+          @mouseenter="prefetchRoute('/app/account')"
+          @focus="prefetchRoute('/app/account')"
+          @touchstart.passive="prefetchRoute('/app/account')"
         >
-          Account
+          <span class="app-avatar" aria-hidden="true">{{ initials }}</span>
+          <span class="app-account__copy">
+            <strong>{{ auth.displayName }}</strong>
+            <small>{{ auth.email || 'Akun JYMZ' }}</small>
+          </span>
+          <Settings :size="16" aria-hidden="true" />
         </RouterLink>
-      </nav>
-    </header>
+      </aside>
 
-    <main class="max-w-7xl mx-auto w-full p-4 md:p-8 flex-grow">
-      <RouterView />
-    </main>
+      <div class="app-workspace">
+        <header class="app-worktop">
+          <RouterLink to="/app" class="app-brand app-brand--compact">
+            <span class="app-brand__mark">JYMZ</span>
+          </RouterLink>
+          <RouterLink
+            to="/app/account"
+            class="app-avatar-link"
+            :aria-label="`Akun ${auth.displayName}`"
+          >
+            <span class="app-avatar" aria-hidden="true">{{ initials }}</span>
+          </RouterLink>
+        </header>
 
-    <footer class="border-t-4 border-slate-900 bg-white">
-      <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row gap-2 justify-between font-mono text-[10px] text-slate-500 uppercase">
-        <span>{{ appStore.appName }} · Frontend M5</span>
-        <span class="truncate">API: {{ appStore.apiBaseUrl }}</span>
+        <div v-if="wake.visible.value" class="app-wake">
+          <ServerWakeBanner
+            :state="wake.state.value"
+            :elapsed-seconds="wake.elapsed.value"
+            :can-retry="wake.canRetry.value"
+            @retry="wake.retry"
+          />
+        </div>
+
+        <main class="app-main">
+          <RouterView v-slot="{ Component }">
+            <Transition name="page" mode="out-in">
+              <component :is="Component" />
+            </Transition>
+          </RouterView>
+        </main>
       </div>
-    </footer>
+    </div>
+
+    <nav class="app-bottom" aria-label="Navigasi utama mobile">
+      <RouterLink
+        v-for="item in navItems"
+        :key="item.to"
+        :to="item.to"
+        class="app-bottom__item"
+        :class="{ 'is-active': isActive(item) }"
+        :aria-current="isActive(item) ? 'page' : undefined"
+        @mouseenter="prefetchRoute(item.to)"
+        @focus="prefetchRoute(item.to)"
+        @touchstart.passive="prefetchRoute(item.to)"
+      >
+        <component :is="item.icon" :size="20" :stroke-width="1.8" aria-hidden="true" />
+        <span>{{ item.shortLabel }}</span>
+      </RouterLink>
+    </nav>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
-import { RouterView } from 'vue-router'
-import { useAppStore } from '../../stores/appStore'
+import { computed, onMounted, type Component } from 'vue'
+import { RouterLink, RouterView, useRoute } from 'vue-router'
+import { ChartColumn, ClipboardList, Dumbbell, House, Settings, UserRound } from '@lucide/vue'
+import ServerWakeBanner from '../ui-v2/ServerWakeBanner.vue'
+import { preloadUiFonts } from '../../lib/preloadFonts'
+import { useServerWake } from '../../lib/useServerWake'
 import { useAuthStore } from '../../stores/authStore'
 
-const appStore = useAppStore()
+interface NavItem {
+  to: string
+  label: string
+  shortLabel: string
+  icon: Component
+  exact?: boolean
+}
+
 const auth = useAuthStore()
+const route = useRoute()
+const wake = useServerWake()
 
+preloadUiFonts()
 onMounted(() => {
-  if (appStore.backendStatus === 'unknown') {
-    void appStore.checkBackend()
-  }
+  if (!auth.me) void auth.loadMe()
 })
 
-const statusLabel = computed(() => {
-  switch (appStore.backendStatus) {
-    case 'online':
-      return 'Backend Online'
-    case 'degraded':
-      return 'Backend Degraded'
-    case 'offline':
-      return 'Backend Offline'
-    case 'checking':
-      return 'Checking…'
-    default:
-      return 'Backend Unknown'
-  }
-})
+const navItems: NavItem[] = [
+  { to: '/app', label: 'Hari ini', shortLabel: 'Hari ini', icon: House, exact: true },
+  { to: '/app/plans', label: 'Plan', shortLabel: 'Plan', icon: ClipboardList },
+  { to: '/app/workouts', label: 'Sesi', shortLabel: 'Sesi', icon: Dumbbell },
+  { to: '/app/progress', label: 'Progres', shortLabel: 'Progres', icon: ChartColumn },
+  { to: '/app/profile', label: 'Profil', shortLabel: 'Profil', icon: UserRound },
+]
 
-const statusClass = computed(() => {
-  switch (appStore.backendStatus) {
-    case 'online':
-      return 'bg-green-300 text-green-950'
-    case 'degraded':
-      return 'bg-yellow-200 text-yellow-950'
-    case 'offline':
-      return 'bg-red-400 text-white'
-    case 'checking':
-      return 'bg-blue-200 text-blue-950'
-    default:
-      return 'bg-slate-100 text-slate-700'
-  }
-})
+/**
+ * Intent-based prefetch: warm the route chunk on hover/focus/touch before the
+ * click lands. The router still owns the actual navigation.
+ */
+const routeChunks: Record<string, () => Promise<unknown>> = {
+  '/app/plans': () => import('../../views/app/PlanListView.vue'),
+  '/app/plans/new': () => import('../../views/app/PlanCreateView.vue'),
+  '/app/workouts': () => import('../../views/app/WorkoutHistoryView.vue'),
+  '/app/progress': () => import('../../views/app/ProgressView.vue'),
+  '/app/profile': () => import('../../views/app/ProfileSettingsView.vue'),
+  '/app/account': () => import('../../views/app/AccountView.vue'),
+}
+const prefetched = new Set<string>()
 
-const statusDotClass = computed(() => {
-  switch (appStore.backendStatus) {
-    case 'online':
-      return 'bg-green-700'
-    case 'degraded':
-      return 'bg-yellow-700'
-    case 'offline':
-      return 'bg-red-800'
-    case 'checking':
-      return 'bg-blue-700 animate-pulse'
-    default:
-      return 'bg-slate-500'
-  }
+function prefetchRoute(path: string) {
+  if (prefetched.has(path)) return
+  const loader = routeChunks[path]
+  if (!loader) return
+  prefetched.add(path)
+  void loader().catch(() => {
+    // A failed prefetch is harmless; the router will retry on navigation.
+  })
+}
+
+function isActive(item: NavItem): boolean {
+  if (item.exact) return route.path === item.to
+  return route.path === item.to || route.path.startsWith(`${item.to}/`)
+}
+
+const initials = computed(() => {
+  const words = auth.displayName.trim().split(/\s+/).filter(Boolean)
+  const first = words[0]?.[0] ?? 'J'
+  const second = words.length > 1 ? words[1]?.[0] : ''
+  return `${first}${second}`.toUpperCase()
 })
 </script>
+
+<style scoped>
+.app-shell {
+  min-height: 100dvh;
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+.app-layout {
+  display: grid;
+  grid-template-columns: 232px minmax(0, 1fr);
+  min-height: 100dvh;
+}
+
+.app-sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  height: 100dvh;
+  flex-direction: column;
+  gap: 32px;
+  padding: 24px 16px;
+  border-right: 1px solid var(--color-line);
+  background: var(--color-paper);
+}
+
+.app-brand {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  min-height: var(--touch-target);
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+.app-brand__mark {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.app-brand__sub {
+  color: var(--color-muted);
+  font-family: var(--font-data);
+  font-size: 0.625rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.app-nav {
+  display: grid;
+  gap: 2px;
+}
+
+.app-nav__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: var(--touch-target);
+  padding: 0 12px;
+  border-radius: var(--radius-control);
+  color: var(--color-muted);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    background-color var(--motion-fast) var(--ease-exit),
+    color var(--motion-fast) var(--ease-exit);
+}
+
+.app-nav__item:hover {
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+.app-nav__item.is-active {
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+.app-nav__item.is-active :deep(svg) {
+  color: var(--color-signal-strong);
+}
+
+.app-account {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 56px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-line);
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+.app-avatar {
+  display: inline-grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid var(--color-line);
+  border-radius: 50%;
+  background: var(--color-surface);
+  font-family: var(--font-data);
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+.app-account__copy {
+  display: grid;
+  min-width: 0;
+  flex: 1 1 auto;
+  gap: 2px;
+}
+
+.app-account__copy strong {
+  overflow: hidden;
+  font-size: 0.8125rem;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-account__copy small {
+  overflow: hidden;
+  color: var(--color-muted);
+  font-family: var(--font-data);
+  font-size: 0.625rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-workspace {
+  min-width: 0;
+}
+
+.app-worktop {
+  display: none;
+}
+
+.app-wake {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: 16px var(--gutter-desktop) 0;
+}
+
+.app-main {
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: 32px var(--gutter-desktop) 64px;
+}
+
+.app-bottom {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .app-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .app-sidebar {
+    display: none;
+  }
+
+  .app-worktop {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px var(--gutter-mobile);
+    border-bottom: 1px solid var(--color-line);
+    background: var(--color-paper);
+  }
+
+  .app-brand--compact .app-brand__mark {
+    font-size: 1.375rem;
+  }
+
+  .app-avatar-link {
+    display: inline-flex;
+    min-width: var(--touch-target);
+    min-height: var(--touch-target);
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+  }
+
+  .app-wake {
+    padding: 12px var(--gutter-mobile) 0;
+  }
+
+  .app-main {
+    padding: 20px var(--gutter-mobile) 96px;
+  }
+
+  .app-bottom {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 30;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid var(--color-line);
+    background: var(--color-paper);
+  }
+
+  .app-bottom__item {
+    display: flex;
+    min-height: 48px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    border-radius: var(--radius-control);
+    color: var(--color-muted);
+    font-family: var(--font-body);
+    font-size: 0.625rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .app-bottom__item.is-active {
+    background: var(--color-surface);
+    color: var(--color-signal-strong);
+  }
+}
+</style>

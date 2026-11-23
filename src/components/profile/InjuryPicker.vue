@@ -1,30 +1,21 @@
 <template>
-  <div class="space-y-3">
-    <div class="flex flex-wrap gap-2">
-      <button
+  <div class="injury-picker">
+    <div class="chip-grid" role="group" aria-label="Cedera atau area yang dihindari">
+      <Chip
         v-for="item in INJURY_OPTIONS"
         :key="item.value"
-        type="button"
-        class="border-2 border-slate-900 px-2.5 py-1.5 font-mono text-[11px] font-bold uppercase transition-all"
-        :class="
-          selected.includes(item.value)
-            ? 'bg-red-500 text-white shadow-none translate-x-[1px] translate-y-[1px]'
-            : 'bg-white text-slate-700 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-slate-100'
-        "
-        @click="toggle(item.value)"
+        :selected="selected.includes(item.value)"
+        @toggle="toggle(item.value)"
       >
         {{ item.label }}
-      </button>
+      </Chip>
     </div>
 
-    <p class="font-mono text-[10px] text-slate-500">
-      {{ selected.length }} selected. Cedera akan dihindari saat plan dibuat.
+    <p class="picker-hint">
+      {{ selected.length }} dipilih. Cedera akan dihindari saat plan dibuat.
     </p>
 
-    <div
-      v-if="selected.length && !healthConsent"
-      class="border-3 border-yellow-700 bg-yellow-50 p-3 font-mono text-xs text-yellow-900"
-    >
+    <div v-if="selected.length && !healthConsent" class="consent-warning" role="status">
       Consent <strong>health data processing</strong> wajib aktif sebelum cedera
       bisa disimpan.
     </div>
@@ -32,23 +23,53 @@
 </template>
 
 <script setup lang="ts">
+import Chip from '../ui-v2/Chip.vue'
 import { INJURY_OPTIONS } from '../../lib/profileOptions'
 
-defineProps({
-  healthConsent: {
-    type: Boolean,
-    default: false,
+withDefaults(
+  defineProps<{
+    healthConsent?: boolean
+  }>(),
+  {
+    healthConsent: false,
   },
-})
+)
 
 const selected = defineModel<string[]>({ required: true })
 
 function toggle(value: string) {
   const index = selected.value.indexOf(value)
-  if (index >= 0) {
-    selected.value.splice(index, 1)
-  } else {
-    selected.value.push(value)
-  }
+  if (index >= 0) selected.value.splice(index, 1)
+  else selected.value.push(value)
 }
 </script>
+
+<style scoped>
+.injury-picker {
+  display: grid;
+  gap: 10px;
+}
+
+.chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.picker-hint {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.consent-warning {
+  padding: 10px 12px;
+  border: 1px solid #f2d9b2;
+  border-radius: var(--radius-control);
+  background: var(--color-warning-bg);
+  color: var(--color-ink);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+</style>

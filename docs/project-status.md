@@ -17,7 +17,7 @@ Scope decision: **feature milestones stop at M5 for now**.
 | Public recommendation flow | ✅ Preserved |
 | Portfolio project page | ✅ Updated in Neon |
 | Banner/screenshot assets | ✅ Generated and published |
-| UI/UX v2 | 🚧 Phase 1 complete (review); phase 2 next |
+| UI/UX v2 | 🚧 Phase 6 complete (review); commit + deploy pending |
 
 M6 and M7 are intentionally deferred until further notice. They are not
 required for the current product scope. The next active workstream is the
@@ -86,12 +86,39 @@ Deployment targets:
 - Created `feat/ui-v2` from `feat/app-v2` @ `992e241`.
 - Completed UI/UX v2 phase 0: baseline Lighthouse, bundle, waterfall, cold
   start, and responsive screenshots in
-  [`ui-ux-v2-baseline.md`](ui-ux-v2-baseline.md).
+  [`ui-ux-v2-baseline.md`](ui-ux-v2-baseline.md). Commit `69ee8d2`.
 - Completed UI/UX v2 phase 1: `tokens.css`, self-hosted Latin fonts, 21 UI-v2
   primitives, `/style-guide`, `_headers`, and `robots.txt`. The style guide was
   rebuilt as a JYMZ field manual with a live training-log specimen; binding
-  design rules live in [`DESIGN.md`](../DESIGN.md). No deploy or commit yet.
+  design rules live in [`DESIGN.md`](../DESIGN.md). Commit `7e6c0de`.
   See [`ui-ux-v2-phase-1.md`](ui-ux-v2-phase-1.md).
+- Implemented UI/UX v2 phase 2: lazy auth bridge (public flow no Neon Auth),
+  new AppShell with desktop sidebar/mobile bottom navigation, Today dashboard
+  with next/active session, weekly ledger and local cache, redesigned auth
+  pages, wired `ServerWakeBanner`, and hidden `/app/debug`. Pending review and
+  commit. See [`ui-ux-v2-phase-2.md`](ui-ux-v2-phase-2.md).
+- Implemented UI/UX v2 phase 3: Plan library/detail/create, Workout history,
+  focus-mode workout logger, set steppers, RPE chips, rest timer, offline sync
+  strip, completion sheet, substitute sheet, and UI-v2 feedback/safety forms.
+  Mock-verified set/start/complete/create payloads and routes. Pending review
+  and commit. See [`ui-ux-v2-phase-3.md`](ui-ux-v2-phase-3.md).
+- Implemented UI/UX v2 phase 4: Progress deck with custom SVG volume chart,
+  body-part balance, personal records, weekly review, profile sections,
+  account console, 5-step onboarding, and UI-v2 profile/consent components.
+  Mock-verified range change, profile save, account deletion dialog, and
+  onboarding submit. Pending review and commit. See
+  [`ui-ux-v2-phase-4.md`](ui-ux-v2-phase-4.md).
+- Implemented UI/UX v2 phase 5: public config/process/dashboard and shared-plan
+  pages, plus route and day-panel motion. Public flow verified without auth or
+  Neon requests, with mocked recommendation/share responses, validation,
+  auto-redirect, and reduced-motion checks. Pending review and commit. See
+  [`ui-ux-v2-phase-5.md`](ui-ux-v2-phase-5.md).
+- Implemented UI/UX v2 phase 6: static font preload, dev-only Vue devtools,
+  intent-based route prefetch, 768 px workout layout fix, removal of technical
+  plan metadata, Indonesian route titles/copy, Lighthouse mobile
+  100/100/100/100, and a 51-screenshot QA matrix at 390/768/1440. Pending
+  review, commit, and deploy. See
+  [`ui-ux-v2-phase-6.md`](ui-ux-v2-phase-6.md).
 
 ## 5. Known limitations
 
@@ -128,15 +155,17 @@ production deploy, not full M7 hardening.
 
 ## 7. Next workstream
 
-**UI/UX & performance v2 — phase 2.**
+**Release UI/UX v2: review, commit phases 2–6, deploy, verify production.**
 
-Phase 2 covers the new AppShell, desktop sidebar/mobile bottom navigation,
-Home/Today, auth pages, auth split from the public entry, and a wired
-`ServerWakeBanner`.
+UI/UX v2 is implemented through phase 6. The remaining work is review, a
+single commit series for phases 2–6, deployment to Cloudflare Pages/Railway,
+and a production smoke test. M6 and M7 remain deferred.
 
 - Baseline: [`ui-ux-v2-baseline.md`](ui-ux-v2-baseline.md)
 - Phase 1: [`ui-ux-v2-phase-1.md`](ui-ux-v2-phase-1.md)
+- Phase 2: [`ui-ux-v2-phase-2.md`](ui-ux-v2-phase-2.md)
+- Phase 3: [`ui-ux-v2-phase-3.md`](ui-ux-v2-phase-3.md)
+- Phase 4: [`ui-ux-v2-phase-4.md`](ui-ux-v2-phase-4.md)
+- Phase 5: [`ui-ux-v2-phase-5.md`](ui-ux-v2-phase-5.md)
+- Phase 6: [`ui-ux-v2-phase-6.md`](ui-ux-v2-phase-6.md)
 - Plan: [`ui-ux-v2-plan.md`](ui-ux-v2-plan.md)
-
-Authenticated Lighthouse/waterfall measurements are still blocked on a safe
-test account plus a separate Neon branch.

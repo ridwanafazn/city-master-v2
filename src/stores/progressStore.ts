@@ -64,6 +64,19 @@ export const useProgressStore = defineStore('progress', {
   },
 
   actions: {
+    async loadInsights(timeZone?: string): Promise<boolean> {
+      try {
+        this.insights = await progressService.getInsights(
+          timeZone || browserTimezone(),
+        )
+        return true
+      } catch {
+        // Home can keep the cached/previous insights; ProgressView still loads
+        // the full progress deck and reports its own errors.
+        return false
+      }
+    },
+
     async load(timeZone?: string, rangeDays?: number): Promise<boolean> {
       if (this.loading) return false
       const zone = timeZone || browserTimezone()

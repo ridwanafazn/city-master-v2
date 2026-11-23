@@ -1,72 +1,57 @@
 <template>
-  <PixelCard :title="title">
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-      <div>
-        <label class="pixel-label">Rating</label>
-        <select v-model.number="rating" class="pixel-input text-xs">
-          <option :value="0">No rating</option>
-          <option v-for="value in [1, 2, 3, 4, 5]" :key="value" :value="value">
-            {{ value }} / 5
-          </option>
-        </select>
-      </div>
-      <div>
-        <label class="pixel-label">Difficulty</label>
-        <select v-model="difficulty" class="pixel-input text-xs">
-          <option value="">No selection</option>
-          <option value="too_easy">Too easy</option>
-          <option value="just_right">Just right</option>
-          <option value="too_hard">Too hard</option>
-        </select>
-      </div>
+  <section class="feedback-form" :aria-labelledby="titleId">
+    <h3 :id="titleId">{{ title }}</h3>
+
+    <div class="feedback-grid">
+      <AppSelect v-model="ratingModel" label="Rating" :options="ratingOptions" />
+      <AppSelect v-model="difficultyModel" label="Kesulitan" :options="difficultyOptions" />
     </div>
 
-    <label class="mt-3 flex items-center gap-2 font-mono text-xs font-bold uppercase">
-      <input v-model="pain" type="checkbox" class="h-4 w-4 accent-slate-900" />
-      Pain / discomfort
-    </label>
-    <input
+    <AppCheckbox
+      v-model="pain"
+      label="Ada nyeri atau ketidaknyamanan"
+      description="Tandai jika gerakan terasa tidak aman atau menimbulkan nyeri."
+    />
+
+    <AppInput
       v-if="pain"
-      v-model.trim="painArea"
-      class="pixel-input mt-2 text-xs"
-      type="text"
+      v-model="painArea"
+      label="Area nyeri"
       maxlength="60"
-      placeholder="Area, e.g. knee"
+      placeholder="Contoh: lutut kanan"
     />
 
-    <textarea
-      v-model.trim="comment"
-      class="pixel-input mt-3 min-h-[80px] text-xs"
+    <AppTextarea
+      v-model="comment"
+      label="Komentar"
+      :rows="3"
       maxlength="2000"
-      placeholder="What worked or did not work?"
+      placeholder="Apa yang berhasil atau tidak berhasil?"
+      hint="Maksimal 2.000 karakter."
     />
 
-    <div
-      v-if="feedbackStore.error"
-      class="mt-3 border-3 border-red-700 bg-red-50 p-2 font-mono text-xs text-red-800"
-    >
+    <p v-if="feedbackStore.error" class="feedback-alert" role="alert">
       {{ feedbackStore.error }}
-    </div>
-    <div
-      v-else-if="sent"
-      class="mt-3 border-3 border-green-700 bg-green-50 p-2 font-mono text-xs text-green-900"
-    >
-      Feedback terkirim.
-    </div>
+    </p>
+    <p v-else-if="sent" class="feedback-notice" role="status">Feedback terkirim.</p>
 
-    <div class="mt-3 flex justify-end">
-      <PixelButton :disabled="feedbackStore.submitting || !hasValue" @click="submit">
-        {{ feedbackStore.submitting ? 'Sending…' : 'Send Feedback' }}
-      </PixelButton>
+    <div class="feedback-actions">
+      <AppButton :disabled="!hasValue" :loading="feedbackStore.submitting" @click="submit">
+        Kirim feedback
+      </AppButton>
     </div>
-  </PixelCard>
+  </section>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import PixelButton from '../ui/PixelButton.vue'
-import PixelCard from '../ui/PixelCard.vue'
+import { computed, ref, useId } from 'vue'
+import AppButton from '../ui-v2/AppButton.vue'
+import AppCheckbox from '../ui-v2/AppCheckbox.vue'
+import AppInput from '../ui-v2/AppInput.vue'
+import AppSelect from '../ui-v2/AppSelect.vue'
+import AppTextarea from '../ui-v2/AppTextarea.vue'
 import { useFeedbackStore } from '../../stores/feedbackStore'
+import type { UiOption } from '../ui-v2'
 import type { Difficulty } from '../../types/feedback'
 
 const props = withDefaults(
@@ -75,16 +60,41 @@ const props = withDefaults(
     workoutId?: string | null
     title?: string
   }>(),
-  { planId: null, workoutId: null, title: 'Give Feedback' },
+  { planId: null, workoutId: null, title: 'Feedback plan' },
 )
 
 const feedbackStore = useFeedbackStore()
+const titleId = `feedback-${useId()}`
 const rating = ref(0)
 const difficulty = ref<Difficulty | ''>('')
 const pain = ref(false)
 const painArea = ref('')
 const comment = ref('')
 const sent = ref(false)
+
+const ratingOptions: UiOption[] = [
+  { value: '0', label: 'Tanpa rating' },
+  ...[1, 2, 3, 4, 5].map((value) => ({ value: String(value), label: `${value} / 5` })),
+]
+const difficultyOptions: UiOption[] = [
+  { value: '', label: 'Tanpa pilihan' },
+  { value: 'too_easy', label: 'Terlalu mudah' },
+  { value: 'just_right', label: 'Pas' },
+  { value: 'too_hard', label: 'Terlalu berat' },
+]
+
+const ratingModel = computed({
+  get: () => String(rating.value),
+  set: (value: string) => {
+    rating.value = Number(value)
+  },
+})
+const difficultyModel = computed({
+  get: () => difficulty.value,
+  set: (value: string) => {
+    difficulty.value = value as Difficulty | ''
+  },
+})
 
 const hasValue = computed(
   () => rating.value > 0 || Boolean(difficulty.value) || pain.value || Boolean(comment.value),
@@ -111,3 +121,57 @@ async function submit() {
   }
 }
 </script>
+
+<style scoped>
+.feedback-form {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-raised);
+}
+
+.feedback-form h3 {
+  margin: 0;
+  font-size: var(--text-h3);
+}
+
+.feedback-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.feedback-alert,
+.feedback-notice {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: var(--radius-control);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.feedback-alert {
+  border: 1px solid #f7d1cd;
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+.feedback-notice {
+  border: 1px solid #cfe6bf;
+  background: var(--color-success-bg);
+  color: var(--color-success-ink);
+}
+
+.feedback-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 640px) {
+  .feedback-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

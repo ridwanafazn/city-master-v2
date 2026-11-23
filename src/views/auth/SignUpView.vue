@@ -1,83 +1,57 @@
 <template>
-  <AuthShell title="Create Account" subtitle="Start with a JYMZ identity">
-    <form class="space-y-4" @submit.prevent="submit">
-      <div>
-        <label class="pixel-label" for="signup-name">Display name</label>
-        <input
-          id="signup-name"
-          v-model.trim="name"
-          type="text"
-          class="pixel-input"
-          autocomplete="name"
-          placeholder="Ridwan"
-          required
-        />
-      </div>
+  <AuthShell title="Buat akun" description="Mulai dengan profil latihan yang bisa Anda ubah kapan saja.">
+    <form class="auth-form" novalidate @submit.prevent="submit">
+      <AppInput
+        v-model="name"
+        label="Nama tampilan"
+        autocomplete="name"
+        placeholder="Nama Anda"
+        required
+        :error="nameError"
+      />
+      <AppInput
+        v-model="email"
+        label="Email"
+        type="email"
+        autocomplete="email"
+        placeholder="nama@email.com"
+        required
+        :error="emailError"
+      />
+      <AppInput
+        v-model="password"
+        label="Password"
+        type="password"
+        autocomplete="new-password"
+        placeholder="Minimal 8 karakter"
+        hint="Minimal 8 karakter. Gunakan kombinasi yang tidak dipakai di layanan lain."
+        required
+        :error="passwordError"
+      />
 
-      <div>
-        <label class="pixel-label" for="signup-email">Email</label>
-        <input
-          id="signup-email"
-          v-model.trim="email"
-          type="email"
-          class="pixel-input"
-          autocomplete="email"
-          placeholder="you@example.com"
-          required
-        />
-      </div>
+      <p v-if="formError" class="auth-alert" role="alert">{{ formError }}</p>
+      <p v-if="!isAuthConfigured" class="auth-alert auth-alert--muted" role="status">
+        Pendaftaran belum aktif di lingkungan ini.
+      </p>
 
-      <div>
-        <label class="pixel-label" for="signup-password">Password</label>
-        <input
-          id="signup-password"
-          v-model="password"
-          type="password"
-          class="pixel-input"
-          autocomplete="new-password"
-          minlength="8"
-          placeholder="Minimal 8 karakter"
-          required
-        />
-      </div>
-
-      <div
-        v-if="localError || auth.error"
-        class="border-3 border-red-700 bg-red-50 p-3 font-mono text-xs text-red-800"
-      >
-        {{ localError || auth.error }}
-      </div>
-
-      <div
-        v-if="!isAuthConfigured"
-        class="border-3 border-yellow-700 bg-yellow-50 p-3 font-mono text-xs text-yellow-900"
-      >
-        VITE_NEON_AUTH_URL belum diisi. Salin URL Neon Auth branch ke
-        <code>.env.local</code>.
-      </div>
-
-      <PixelButton type="submit" class="w-full" :disabled="submitting">
-        {{ submitting ? 'Creating…' : 'Create Account >' }}
-      </PixelButton>
+      <AppButton type="submit" block :loading="submitting">
+        {{ submitting ? 'Membuat akun…' : 'Buat akun' }}
+      </AppButton>
     </form>
 
-    <div class="mt-5 border-t-2 border-slate-200 pt-4 font-mono text-xs text-slate-600">
+    <p class="auth-switch">
       Sudah punya akun?
-      <RouterLink
-        :to="{ name: 'sign-in', query: { redirectTo } }"
-        class="font-black uppercase text-blue-700 hover:underline"
-      >
-        Masuk
-      </RouterLink>
-    </div>
+      <RouterLink :to="{ name: 'sign-in', query: { redirectTo } }">Masuk</RouterLink>
+    </p>
   </AuthShell>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AuthShell from '../../components/auth/AuthShell.vue'
-import PixelButton from '../../components/ui/PixelButton.vue'
+import AppButton from '../../components/ui-v2/AppButton.vue'
+import AppInput from '../../components/ui-v2/AppInput.vue'
 import { isAuthConfigured } from '../../lib/auth'
 import { safeRedirect } from '../../lib/navigation'
 import { useAuthStore } from '../../stores/authStore'
@@ -89,28 +63,93 @@ const router = useRouter()
 const name = ref('')
 const email = ref('')
 const password = ref('')
+const nameError = ref('')
+const emailError = ref('')
+const passwordError = ref('')
+const formError = ref('')
 const submitting = ref(false)
-const localError = ref<string | null>(null)
 const redirectTo = computed(() => safeRedirect(route.query.redirectTo))
 
+onMounted(() => {
+  auth.error = null
+  void auth.initialize().then(() => {
+    if (auth.isAuthenticated) {
+      void router.replace(auth.profileComplete ? redirectTo.value : '/app/onboarding')
+    }
+  })
+})
+
+function validate(): boolean {
+  nameError.value = ''
+  emailError.value = ''
+  passwordError.value = ''
+  formError.value = ''
+  if (!name.value.trim()) nameError.value = 'Nama wajib diisi.'
+  if (!email.value.trim()) emailError.value = 'Email wajib diisi.'
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
+    emailError.value = 'Format email belum benar.'
+  }
+  if (!password.value) passwordError.value = 'Password wajib diisi.'
+  else if (password.value.length < 8) passwordError.value = 'Password minimal 8 karakter.'
+  return !nameError.value && !emailError.value && !passwordError.value
+}
+
 async function submit() {
-  localError.value = null
-  if (!name.value || !email.value || !password.value) {
-    localError.value = 'Nama, email, dan password wajib diisi.'
-    return
-  }
-  if (password.value.length < 8) {
-    localError.value = 'Password minimal 8 karakter.'
-    return
-  }
+  if (!validate()) return
   submitting.value = true
   try {
-    const ok = await auth.signUp(name.value, email.value, password.value)
+    const ok = await auth.signUp(name.value.trim(), email.value.trim(), password.value)
     if (ok) {
       await router.replace(auth.profileComplete ? redirectTo.value : '/app/onboarding')
+    } else {
+      formError.value = auth.error || 'Gagal membuat akun. Coba lagi.'
     }
   } finally {
     submitting.value = false
   }
 }
 </script>
+
+<style scoped>
+.auth-form {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.auth-alert {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid #f7d1cd;
+  border-radius: var(--radius-control);
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.auth-alert--muted {
+  border-color: var(--color-line);
+  background: var(--color-surface);
+  color: var(--color-muted);
+  font-weight: 500;
+}
+
+.auth-switch {
+  margin: var(--space-4) 0 0;
+  color: var(--color-muted);
+  font-size: var(--text-small);
+}
+
+.auth-switch a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-target);
+  padding: 0 4px;
+  margin: -12px -4px;
+  color: var(--color-signal-strong);
+  font-weight: 650;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+</style>

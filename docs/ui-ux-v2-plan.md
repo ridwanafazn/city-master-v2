@@ -1,7 +1,7 @@
 # JYMZ UI/UX & Performance v2 — plan
 
-Status: **planned, not started**  
-Last updated: **2026-11-23**  
+Status: **implemented through phase 6; pending review, commit, and deploy**  
+Last updated: **2026-11-24**  
 Branch to use when implementation starts: `feat/ui-v2`  
 Scope: **all pages**, including the public recommendation flow.
 
